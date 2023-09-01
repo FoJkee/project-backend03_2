@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser'
 import mongoose from "mongoose";
 import {blogRouter} from "./routers/blog-router";
 import {testingRouter} from "./routers/testing-router";
+import {postRouter} from "./routers/post-router";
 
 dotenv.config()
 
@@ -17,6 +18,7 @@ app.use(cookieParser())
 
 
 app.use('/blogs', blogRouter)
+app.use('/posts', postRouter)
 app.use('/testing/all-data', testingRouter)
 
 

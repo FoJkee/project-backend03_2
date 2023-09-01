@@ -1,9 +1,11 @@
 import {Response, Request} from "express";
-import {BlogClass, BlogService} from "../services/blog-service";
+import {BlogService} from "../services/blog-service";
 import {pagination} from "./paginations";
+import {BlogType, Paginated} from "../types/blog-type";
+import {postService} from "./post-controller";
 
 
-const blogService = new BlogService()
+export const blogService = new BlogService()
 
 export class BlogController {
     async getBlog(req: Request, res: Response) {
@@ -15,31 +17,21 @@ export class BlogController {
         // const searchNameTerm = req.query.searchNameTerm ? req.query.searchNameTerm.toString() : null
 
         const {
-            searchNameTerm, sortBy,
-            sortDirection, pageSize, pageNumber
+            pageNumber, pageSize, sortDirection, sortBy,
+            searchNameTerm
         } = pagination(req)
 
         const getBlogs = await blogService.getBlogs(
             searchNameTerm,
             sortBy,
             sortDirection,
+            pageNumber,
             pageSize,
-            pageNumber
         )
-        console.log("getBlogs", getBlogs)
-
-        // const itemBlog = getBlogs?.map(el => ({
-        //     id: el.id,
-        //     name: el.name,
-        //     description: el.description,
-        //     websiteUrl: el.websiteUrl,
-        //     createdAt: el.createdAt,
-        //     isMembership: el.isMembership
-        // }))
 
         const blogCount = await blogService.getBlogsCount(searchNameTerm)
 
-        const result = {
+        const result: Paginated<BlogType> = {
             pagesCount: Math.ceil(blogCount / pageSize),
             page: pageNumber,
             pageSize: pageSize,
@@ -65,15 +57,26 @@ export class BlogController {
 
     async getPostForBlog(req: Request, res: Response) {
 
-
     }
 
+
+
     async createPostForBlog(req: Request, res: Response) {
-        try {
 
-        } catch (e) {
+        const blogId = req.params.blogId
+        const title = req.body.title
+        const shortDescription = req.body.shortDescription
+        const content = req.body.content
 
+        const blog = await blogService.getBlogId(blogId)
+        const newPost = await postService.createPost(title, shortDescription, content, blog!.id, blog!.name)
+
+        if(newPost){
+            res.status(201).json(newPost)
+        } else {
+            res.sendStatus(404)
         }
+
 
     }
 
@@ -107,10 +110,13 @@ export class BlogController {
     }
 
     async deleteBlogId(req: Request, res: Response) {
-        try {
+        const id = req.params.id
 
-        } catch (e) {
-
+        const deleteBlog = await blogService.deleteBlogId(id)
+        if (deleteBlog) {
+            res.sendStatus(204)
+        } else {
+            res.sendStatus(404)
         }
 
     }

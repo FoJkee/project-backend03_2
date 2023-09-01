@@ -1,11 +1,12 @@
 import {BlogRepository} from "../repository/blog-repository";
+import {BlogType} from "../types/blog-type";
 
-const blogRepository = new BlogRepository()
+export const blogRepository = new BlogRepository()
 
 export class BlogService {
 
     async getBlogs(searchNameTerm: string, sortBy: string,
-                   sortDirection: string, pageNumber: number, pageSize: number): Promise<BlogClass[] | null> {
+                   sortDirection: string, pageNumber: number, pageSize: number): Promise<BlogType[]> {
 
         return blogRepository.getBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize)
     }
@@ -14,10 +15,9 @@ export class BlogService {
         return blogRepository.getBlogsCount(searchNameTerm)
     }
 
+    async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogType | null> {
 
-    async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogClass | null> {
-
-        const newBlog = new BlogClass(
+        const newBlog = new BlogType(
             new Date().getTime().toString(),
             name,
             description,
@@ -28,7 +28,12 @@ export class BlogService {
         return blogRepository.createBlog(newBlog)
     }
 
-    async getBlogId(id: string): Promise<BlogClass | null> {
+    async createPostForBlog(blogId: string, title: string, shortDescription: string, content:string){
+
+
+    }
+
+    async getBlogId(id: string): Promise<BlogType | null> {
         return blogRepository.getBlogId(id)
 
     }
@@ -39,18 +44,5 @@ export class BlogService {
 
     async deleteBlogId(id: string): Promise<boolean> {
         return blogRepository.deleteBlogId(id)
-    }
-}
-
-
-export class BlogClass {
-    constructor(
-        public id: string,
-        public name: string,
-        public description: string,
-        public websiteUrl: string,
-        public createdAt: string,
-        public isMembership: boolean
-    ) {
     }
 }

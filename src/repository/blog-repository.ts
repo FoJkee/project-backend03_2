@@ -1,18 +1,20 @@
 import {BlogModels} from "../models/blog-model";
-import {BlogClass} from "../services/blog-service";
+import {BlogType} from "../types/blog-type";
 
 export class BlogRepository {
 
     async getBlogs(searchNameTerm: string, sortBy: string,
-                   sortDirection: string, pageNumber: number, pageSize: number): Promise<BlogClass[] | null> {
+                   sortDirection: string, pageNumber: number, pageSize: number): Promise<BlogType[]> {
 
-        const filter: any = {name: {$regex: searchNameTerm, $options: 'i'}}
+        const filter = {name: {$regex: searchNameTerm, $options: 'i'}}
 
-
-        return BlogModels.find(filter)
-            .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})
-            .skip(pageSize * (pageNumber - 1))
+        const blogs = await BlogModels.find(filter)
+            .sort({[sortBy]: sortDirection === 'asc' ? 'asc' : 'desc'})
+             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
+
+        return blogs
+
     }
 
     async getBlogsCount(searchNameTerm: string): Promise<number> {
@@ -22,12 +24,24 @@ export class BlogRepository {
         return BlogModels.countDocuments(filter)
     }
 
-    async createBlog(blog: BlogClass): Promise<BlogClass | null> {
-        await BlogModels.insertMany(blog)
-        return this.getBlogId(blog.id)
+    async createBlog(blog: BlogType): Promise<BlogType | null> {
+        return  BlogModels.create(blog)
     }
 
-    async getBlogId(id: string): Promise<BlogClass | null> {
+    async createPostForBlog(){
+
+
+    }
+
+
+
+
+
+
+
+
+
+    async getBlogId(id: string): Promise<BlogType | null> {
         return BlogModels.findOne({id})
     }
 
@@ -41,7 +55,7 @@ export class BlogRepository {
     }
 
     async deleteBlogId(id: string): Promise<boolean> {
-        const result = await BlogModels.deleteMany({id})
+        const result = await BlogModels.deleteOne({id})
         return result.deletedCount === 1
     }
 
