@@ -3,7 +3,6 @@ import {validationResult} from "express-validator";
 
 
 export const errorsMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-
     const errMes = ({msg, path}: any) => {
 
         return {

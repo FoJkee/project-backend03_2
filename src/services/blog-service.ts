@@ -1,18 +1,20 @@
 import {BlogRepository} from "../repository/blog-repository";
 import {BlogType} from "../types/blog-type";
+import {PostModel} from "../models/post-model";
 
-export const blogRepository = new BlogRepository()
 
 export class BlogService {
+    constructor(private blogRepository: BlogRepository) {
+    }
 
     async getBlogs(searchNameTerm: string, sortBy: string,
                    sortDirection: string, pageNumber: number, pageSize: number): Promise<BlogType[]> {
 
-        return blogRepository.getBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize)
+        return this.blogRepository.getBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize)
     }
 
     async getBlogsCount(searchNameTerm: string): Promise<number> {
-        return blogRepository.getBlogsCount(searchNameTerm)
+        return this.blogRepository.getBlogsCount(searchNameTerm)
     }
 
     async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogType | null> {
@@ -25,24 +27,28 @@ export class BlogService {
             new Date().toISOString(),
             false
         )
-        return blogRepository.createBlog(newBlog)
+        return this.blogRepository.createBlog(newBlog)
     }
 
-    async createPostForBlog(blogId: string, title: string, shortDescription: string, content:string){
+    async getPostForBlog(blogId: string, pageNumber: number, pageSize: number, sortBy: string, sortDirection: string) {
+        return this.blogRepository.getPostForBlog(blogId, pageNumber, pageSize, sortBy, sortDirection)
+    }
 
+    async getPostForBlogCount(blogId: string): Promise<number> {
+        return this.blogRepository.getPostForBlogCount(blogId)
 
     }
 
     async getBlogId(id: string): Promise<BlogType | null> {
-        return blogRepository.getBlogId(id)
+        return this.blogRepository.getBlogId(id)
 
     }
 
     async updateBlogId(id: string, name: string, description: string, websiteUrl: string): Promise<boolean> {
-        return blogRepository.updateBlogId(id, name, description, websiteUrl)
+        return this.blogRepository.updateBlogId(id, name, description, websiteUrl)
     }
 
     async deleteBlogId(id: string): Promise<boolean> {
-        return blogRepository.deleteBlogId(id)
+        return this.blogRepository.deleteBlogId(id)
     }
 }

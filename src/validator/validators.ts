@@ -53,6 +53,5 @@ export const PostContentValidator = body('content')
 
 export const PostBlogIdValidator = body('blogId')
     .trim()
-    .notEmpty()
     .isString()
     .withMessage('blogId is required')

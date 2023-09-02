@@ -1,5 +1,6 @@
 import {BlogModels} from "../models/blog-model";
 import {BlogType} from "../types/blog-type";
+import {PostModel} from "../models/post-model";
 
 export class BlogRepository {
 
@@ -8,12 +9,11 @@ export class BlogRepository {
 
         const filter = {name: {$regex: searchNameTerm, $options: 'i'}}
 
-        const blogs = await BlogModels.find(filter)
+        return BlogModels.find(filter, {_id: 0, __v: 0})
             .sort({[sortBy]: sortDirection === 'asc' ? 'asc' : 'desc'})
-             .skip((pageNumber - 1) * pageSize)
+            .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
 
-        return blogs
 
     }
 
@@ -25,20 +25,20 @@ export class BlogRepository {
     }
 
     async createBlog(blog: BlogType): Promise<BlogType | null> {
-        return  BlogModels.create(blog)
+        return BlogModels.create(blog)
     }
 
-    async createPostForBlog(){
-
-
+    async getPostForBlog(blogId: string, pageNumber: number, pageSize: number, sortBy: string, sortDirection: string) {
+        return PostModel
+            .find({blogId})
+            .sort({[sortBy]: sortDirection === 'asc' ? 'asc' : 'desc'})
+            .skip(pageSize * (pageNumber - 1))
+            .limit(pageSize)
     }
 
-
-
-
-
-
-
+    async getPostForBlogCount(blogId: string): Promise<number> {
+        return PostModel.countDocuments({blogId})
+    }
 
 
     async getBlogId(id: string): Promise<BlogType | null> {

@@ -12,12 +12,23 @@ export class PostRepository {
 
     }
 
-    async getPosts() {
+    async getPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<PostType[]> {
+        const filter: any = {}
+        return  PostModel.find(filter, {_id: 0, __v: 0} )
+            .sort({[sortBy]: sortDirection === 'asc' ? 'asc' : 'desc'})
+            .skip(pageSize * (pageNumber - 1))
+            .limit(pageSize)
+    }
 
+    async getCountPosts(): Promise<number> {
+        const filter: any = {}
+        return PostModel.countDocuments(filter)
     }
 
     async createPost(post: PostType): Promise<PostType | null> {
         return PostModel.create(post)
+
+
     }
 
     async getPostsId(id: string) {

@@ -1,11 +1,14 @@
 import {Request, Response} from "express";
 import {PostService} from "../services/post-service";
 
-import {blogService} from "./blog-controller";
+import {pagination} from "./paginations";
+import {BlogService} from "../services/blog-service";
 
-export const postService = new PostService()
 
 export class PostController {
+
+    constructor(private postService: PostService, private blogService: BlogService) {
+    }
     async getCommentByPost(req: Request, res: Response) {
 
     }
@@ -16,6 +19,21 @@ export class PostController {
 
     async getPosts(req: Request, res: Response) {
 
+        const  {pageNumber, pageSize, sortDirection, sortBy} = pagination(req)
+
+        const getPost = await this.postService.getPosts(
+            pageNumber,pageSize, sortDirection, sortBy
+        )
+        const postCount = await this.postService.getCountPosts()
+
+        const result = {
+            pagesCount: Math.ceil(postCount / pageSize),
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: postCount,
+            items: getPost
+        }
+
     }
 
     async createPost(req: Request, res: Response) {
@@ -25,9 +43,14 @@ export class PostController {
         const shortDescription = req.body.shortDescription
         const content = req.body.content
 
-        const blog = await blogService.getBlogId(blogId)
+        const blog = await this.blogService.getBlogId(blogId)
 
-        const newPost = await postService.createPost(title, shortDescription, content, blog!.id, req.body.blogName)
+        if (!blog) {
+            res.sendStatus(404)
+            return
+        }
+
+        const newPost = await this.postService.createPost(title, shortDescription, content, blog.id, blog.name)
 
         if (newPost) {
             res.status(201).json(newPost)

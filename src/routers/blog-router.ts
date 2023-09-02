@@ -1,28 +1,35 @@
 import {Router} from "express";
-import {BlogController} from "../controllers/blog-controller";
 import {BlogDescriptionValidator, BlogNameValidator, BlogWebsiteUrlValidator} from "../validator/validators";
 import {authBasicAuthMiddleware} from "../validator/authBasicAuthMiddleware";
 import {errorsMiddleware} from "../validator/errorsMiddleware";
 
+import {blogController} from "../container";
+
 export const blogRouter = Router({})
 
-const blogController = new BlogController()
 
-blogRouter.get('/', blogController.getBlog)
+blogRouter.get('/',
+    blogController.getBlog.bind(blogController))
 
-blogRouter.post('/', authBasicAuthMiddleware,
-    BlogNameValidator, BlogDescriptionValidator, BlogWebsiteUrlValidator, errorsMiddleware, blogController.createBlog)
+blogRouter.post('/',
+    BlogNameValidator, BlogDescriptionValidator, BlogWebsiteUrlValidator, errorsMiddleware,
+    blogController.createBlog.bind(blogController))
 
-blogRouter.get('/:id/posts', blogController.getPostForBlog)
+blogRouter.get('/:id/posts',
+    blogController.getPostForBlog.bind(blogController))
 
-blogRouter.post('/:id/posts', authBasicAuthMiddleware, errorsMiddleware, blogController.createPostForBlog)
+blogRouter.post('/:blogId/posts', errorsMiddleware,
+    blogController.createPostForBlog.bind(blogController))
 
-blogRouter.get('/:id', blogController.getBlogId)
+blogRouter.get('/:id',
+    blogController.getBlogId.bind(blogController))
 
 blogRouter.put('/:id', authBasicAuthMiddleware,
-    BlogNameValidator, BlogDescriptionValidator, BlogWebsiteUrlValidator, errorsMiddleware, blogController.updateBlogId)
+    BlogNameValidator, BlogDescriptionValidator, BlogWebsiteUrlValidator, errorsMiddleware,
+    blogController.updateBlogId.bind(blogController))
 
-blogRouter.delete('/:id', authBasicAuthMiddleware, blogController.deleteBlogId)
+blogRouter.delete('/:id', authBasicAuthMiddleware,
+    blogController.deleteBlogId.bind(blogController))
 
 
 

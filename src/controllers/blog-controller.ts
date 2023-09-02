@@ -1,27 +1,20 @@
 import {Response, Request} from "express";
 import {BlogService} from "../services/blog-service";
-import {pagination} from "./paginations";
+import {input, pagination} from "./paginations";
 import {BlogType, Paginated} from "../types/blog-type";
-import {postService} from "./post-controller";
+import {PostService} from "../services/post-service";
 
-
-export const blogService = new BlogService()
 
 export class BlogController {
+    constructor(private blogService: BlogService, private postService: PostService) {
+    }
     async getBlog(req: Request, res: Response) {
 
-        // const pageNumber = Number(req.query.pageNumber) || 1
-        // const pageSize = Number(req.query.pageSize) || 10
-        // const sortDirection = req.query.sortDirection === 'asc' ? 'asc' : 'desc'
-        // const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt'
-        // const searchNameTerm = req.query.searchNameTerm ? req.query.searchNameTerm.toString() : null
+        const searchNameTerm = req.query.searchNameTerm ? req.query.searchNameTerm.toString() : ''
 
-        const {
-            pageNumber, pageSize, sortDirection, sortBy,
-            searchNameTerm
-        } = pagination(req)
+        const {pageNumber, pageSize, sortDirection, sortBy} = input
 
-        const getBlogs = await blogService.getBlogs(
+        const getBlogs = await this.blogService.getBlogs(
             searchNameTerm,
             sortBy,
             sortDirection,
@@ -29,7 +22,7 @@ export class BlogController {
             pageSize,
         )
 
-        const blogCount = await blogService.getBlogsCount(searchNameTerm)
+        const blogCount = await this.blogService.getBlogsCount(searchNameTerm)
 
         const result: Paginated<BlogType> = {
             pagesCount: Math.ceil(blogCount / pageSize),
@@ -43,47 +36,60 @@ export class BlogController {
 
     async createBlog(req: Request, res: Response) {
 
-        const name = req.body.name
-        const description = req.body.description
-        const websiteUrl = req.body.websiteUrl
+        const {name, description, websiteUrl} = req.body
 
-        const newBlog = await blogService.createBlog(name, description, websiteUrl)
-        if (newBlog) {
-            res.status(201).json(newBlog)
-        } else {
-            res.sendStatus(400)
-        }
+        const newBlog = await this.blogService.createBlog(name, description, websiteUrl)
+        if (newBlog) return res.status(201).json(newBlog)
+        return res.sendStatus(400)
+
     }
 
     async getPostForBlog(req: Request, res: Response) {
+        const blogId = req.params.id
+        const {pageNumber, pageSize, sortBy, sortDirection} = pagination(req)
 
+        const getPostsForBlog = await this.blogService.getPostForBlog(
+            blogId, pageNumber, pageSize, sortBy, sortDirection)
+
+        const getPostsForBlogCount = await this.blogService.getPostForBlogCount(blogId)
+
+        const result = {
+            pagesCount: Math.ceil(getPostsForBlogCount / pageSize),
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: getPostsForBlogCount,
+            items: getPostsForBlog
+        }
+
+        res.status(200).json(result)
     }
-
-
 
     async createPostForBlog(req: Request, res: Response) {
 
         const blogId = req.params.blogId
-        const title = req.body.title
-        const shortDescription = req.body.shortDescription
-        const content = req.body.content
 
-        const blog = await blogService.getBlogId(blogId)
-        const newPost = await postService.createPost(title, shortDescription, content, blog!.id, blog!.name)
+        const {title, shortDescription, content} = req.body
 
-        if(newPost){
+        const blog = await this.blogService.getBlogId(blogId)
+        if (!blog) {
+            res.sendStatus(404)
+            return
+        }
+        const newPost = await this.postService.createPost(title, shortDescription, content,
+            blog.id, blog.name)
+
+        if (newPost) {
             res.status(201).json(newPost)
         } else {
             res.sendStatus(404)
         }
-
 
     }
 
 
     async getBlogId(req: Request, res: Response) {
         const id = req.params.id
-        const blogId = await blogService.getBlogId(id)
+        const blogId = await this.blogService.getBlogId(id)
         if (blogId) {
             res.status(200).json(blogId)
         } else {
@@ -99,7 +105,7 @@ export class BlogController {
         const description = req.body.description
         const websiteUrl = req.body.websiteUrl
 
-        const updateBlog = await blogService.updateBlogId(id, name, description, websiteUrl)
+        const updateBlog = await this.blogService.updateBlogId(id, name, description, websiteUrl)
 
         if (updateBlog) {
             res.status(204).json(updateBlog)
@@ -112,7 +118,7 @@ export class BlogController {
     async deleteBlogId(req: Request, res: Response) {
         const id = req.params.id
 
-        const deleteBlog = await blogService.deleteBlogId(id)
+        const deleteBlog = await this.blogService.deleteBlogId(id)
         if (deleteBlog) {
             res.sendStatus(204)
         } else {
