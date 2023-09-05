@@ -1,6 +1,6 @@
 import {Response, Request} from "express";
 import {BlogService} from "../services/blog-service";
-import {input, pagination} from "./paginations";
+import {pagination} from "./paginations";
 import {BlogType, Paginated} from "../types/blog-type";
 import {PostService} from "../services/post-service";
 
@@ -8,11 +8,12 @@ import {PostService} from "../services/post-service";
 export class BlogController {
     constructor(private blogService: BlogService, private postService: PostService) {
     }
+
     async getBlog(req: Request, res: Response) {
 
         const searchNameTerm = req.query.searchNameTerm ? req.query.searchNameTerm.toString() : ''
 
-        const {pageNumber, pageSize, sortDirection, sortBy} = input
+        const {pageNumber, pageSize, sortDirection, sortBy} = pagination(req)
 
         const getBlogs = await this.blogService.getBlogs(
             searchNameTerm,
@@ -66,7 +67,7 @@ export class BlogController {
 
     async createPostForBlog(req: Request, res: Response) {
 
-        const blogId = req.params.blogId
+        const {blogId} = req.params
 
         const {title, shortDescription, content} = req.body
 
@@ -100,10 +101,10 @@ export class BlogController {
     }
 
     async updateBlogId(req: Request, res: Response) {
-        const id = req.params.id
-        const name = req.body.name
-        const description = req.body.description
-        const websiteUrl = req.body.websiteUrl
+
+        const {id} = req.params
+        const {name, description, websiteUrl} = req.body
+
 
         const updateBlog = await this.blogService.updateBlogId(id, name, description, websiteUrl)
 

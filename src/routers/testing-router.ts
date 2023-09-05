@@ -1,8 +1,7 @@
 import {Router} from "express";
-import {TestingController} from "../controllers/testing-controller";
+import {testController} from "../container";
 
 
-const testingController = new TestingController()
 export const testingRouter = Router({})
 
-testingRouter.delete('/', testingController.deleteAll)
+testingRouter.delete('/', testController.deleteAll.bind(testController))

@@ -1,42 +1,44 @@
 import {PostRepository} from "../repository/post-repository";
-import {PostType} from "../types/post-type";
+import {PostType, PostTypeView} from "../types/post-type";
+import {randomUUID} from "crypto";
+import {CommentType, CommentTypeView} from "../types/comment-type";
 
 
 export class PostService {
     constructor(private postRepository: PostRepository) {
     }
+
     async getCommentByPost() {
 
     }
 
-    async createCommentByPost() {
+    async createCommentByPost(userId: string, postId: string, content: string) {
 
     }
 
-    async getPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<PostType[]> {
+    async getPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<PostTypeView[]> {
         return this.postRepository.getPosts(pageNumber, pageSize, sortBy, sortDirection)
     }
 
-    async getCountPosts(): Promise<number>{
+    async getCountPosts(): Promise<number> {
         return this.postRepository.getCountPosts()
     }
 
-    async createPost(title: string, shortDescription: string, content: string, blogId: string, blogName: string): Promise<PostType | null> {
+    async createPost(title: string, shortDescription: string, content: string, blogId: string, blogName: string): Promise<PostTypeView | null> {
 
         const newPost = new PostType(
-            new Date().getTime().toString(),
+            randomUUID(),
             title,
             shortDescription,
             content,
             blogId,
-            blogName,
-            new Date().toISOString()
+            blogName
         )
         return this.postRepository.createPost(newPost)
 
     }
 
-    async getPostsId(id: string) {
+    async getPostsId(id: string): Promise<PostTypeView | null> {
         return this.postRepository.getPostsId(id)
     }
 
@@ -45,9 +47,12 @@ export class PostService {
         return this.postRepository.updatedPostId(id, title, shortDescription, content, blogId)
     }
 
-    async deletePostId(id: string) {
+    async deletePostId(id: string): Promise<boolean> {
+        return this.postRepository.deletePostId(id)
+    }
 
-
+    async deletePostAll(): Promise<boolean>{
+        return this.postRepository.deletePostAll()
     }
 
 

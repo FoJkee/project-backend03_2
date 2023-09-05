@@ -1,11 +1,11 @@
 import {BlogModels} from "../models/blog-model";
-import {BlogType} from "../types/blog-type";
+import {BlogType, BlogTypeView} from "../types/blog-type";
 import {PostModel} from "../models/post-model";
 
 export class BlogRepository {
 
     async getBlogs(searchNameTerm: string, sortBy: string,
-                   sortDirection: string, pageNumber: number, pageSize: number): Promise<BlogType[]> {
+                   sortDirection: string, pageNumber: number, pageSize: number): Promise<BlogTypeView[]> {
 
         const filter = {name: {$regex: searchNameTerm, $options: 'i'}}
 
@@ -24,7 +24,7 @@ export class BlogRepository {
         return BlogModels.countDocuments(filter)
     }
 
-    async createBlog(blog: BlogType): Promise<BlogType | null> {
+    async createBlog(blog: BlogType): Promise<BlogTypeView | null> {
         return BlogModels.create(blog)
     }
 
@@ -56,6 +56,11 @@ export class BlogRepository {
 
     async deleteBlogId(id: string): Promise<boolean> {
         const result = await BlogModels.deleteOne({id})
+        return result.deletedCount === 1
+    }
+
+    async deleteBlogAll(): Promise<boolean> {
+        const result = await BlogModels.deleteMany({})
         return result.deletedCount === 1
     }
 

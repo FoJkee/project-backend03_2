@@ -1,6 +1,6 @@
 import {BlogRepository} from "../repository/blog-repository";
-import {BlogType} from "../types/blog-type";
-import {PostModel} from "../models/post-model";
+import {BlogType, BlogTypeView} from "../types/blog-type";
+import {randomUUID} from "crypto";
 
 
 export class BlogService {
@@ -8,7 +8,7 @@ export class BlogService {
     }
 
     async getBlogs(searchNameTerm: string, sortBy: string,
-                   sortDirection: string, pageNumber: number, pageSize: number): Promise<BlogType[]> {
+                   sortDirection: string, pageNumber: number, pageSize: number): Promise<BlogTypeView[]> {
 
         return this.blogRepository.getBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize)
     }
@@ -17,10 +17,10 @@ export class BlogService {
         return this.blogRepository.getBlogsCount(searchNameTerm)
     }
 
-    async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogType | null> {
+    async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogTypeView | null> {
 
         const newBlog = new BlogType(
-            new Date().getTime().toString(),
+            randomUUID(),
             name,
             description,
             websiteUrl,
@@ -39,9 +39,8 @@ export class BlogService {
 
     }
 
-    async getBlogId(id: string): Promise<BlogType | null> {
+    async getBlogId(id: string): Promise<BlogTypeView | null> {
         return this.blogRepository.getBlogId(id)
-
     }
 
     async updateBlogId(id: string, name: string, description: string, websiteUrl: string): Promise<boolean> {
@@ -50,5 +49,9 @@ export class BlogService {
 
     async deleteBlogId(id: string): Promise<boolean> {
         return this.blogRepository.deleteBlogId(id)
+    }
+
+    async deleteBlogAll(): Promise<boolean> {
+        return this.blogRepository.deleteBlogAll()
     }
 }
