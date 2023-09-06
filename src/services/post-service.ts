@@ -2,6 +2,9 @@ import {PostRepository} from "../repository/post-repository";
 import {PostType, PostTypeView} from "../types/post-type";
 import {randomUUID} from "crypto";
 import {CommentType, CommentTypeView} from "../types/comment-type";
+import {UserRepository} from "../repository/user-repository";
+import {UserModel} from "../models/user-model";
+import {PostModel} from "../models/post-model";
 
 
 export class PostService {
@@ -12,8 +15,22 @@ export class PostService {
 
     }
 
-    async createCommentByPost(userId: string, postId: string, content: string) {
+    async createCommentByPost(userId: string, userLogin: string, postId: string, content: string): Promise<CommentTypeView | null> {
 
+        const user = await UserModel.findOne({userId, userLogin})
+        const post = await PostModel.findOne({postId})
+
+        const createComment = new CommentType(
+            randomUUID(),
+            postId,
+            content,
+            {
+                userId: user!.id,
+                userLogin: user!.login
+            },
+            new Date().toISOString()
+        )
+        return this.postRepository.createCommentByPost(createComment)
     }
 
     async getPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<PostTypeView[]> {
@@ -51,7 +68,7 @@ export class PostService {
         return this.postRepository.deletePostId(id)
     }
 
-    async deletePostAll(): Promise<boolean>{
+    async deletePostAll(): Promise<boolean> {
         return this.postRepository.deletePostAll()
     }
 

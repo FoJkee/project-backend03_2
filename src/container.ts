@@ -18,7 +18,6 @@ const postRepository = new PostRepository()
 const postService = new PostService(postRepository)
 
 // users
-
 const userRepository =  new UserRepository()
 const userService = new UserService(userRepository)
 
@@ -26,7 +25,7 @@ const userService = new UserService(userRepository)
 
 // controllers
 export const blogController = new BlogController(blogService, postService)
-export const postController = new PostController(postService, blogService)
+export const postController = new PostController(postService, blogService, userService)
 export const userController = new UserController(userService)
 export const testController = new TestingController(blogService, postService, userService)
 

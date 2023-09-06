@@ -15,7 +15,7 @@ blogRouter.post('/',
     BlogNameValidator, BlogDescriptionValidator, BlogWebsiteUrlValidator, errorsMiddleware,
     blogController.createBlog.bind(blogController))
 
-blogRouter.get('/:id/posts',
+blogRouter.get('/:blogId/posts',
     blogController.getPostForBlog.bind(blogController))
 
 blogRouter.post('/:blogId/posts', errorsMiddleware,

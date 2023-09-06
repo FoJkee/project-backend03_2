@@ -3,11 +3,12 @@ import {PostService} from "../services/post-service";
 
 import {pagination} from "./paginations";
 import {BlogService} from "../services/blog-service";
+import {UserService} from "../services/user-service";
 
 
 export class PostController {
 
-    constructor(private postService: PostService, private blogService: BlogService) {
+    constructor(private postService: PostService, private blogService: BlogService, private userService: UserService) {
     }
 
     async getCommentByPost(req: Request, res: Response) {
@@ -15,9 +16,19 @@ export class PostController {
     }
 
     async createCommentByPost(req: Request, res: Response) {
+        const {postId, userId} = req.params
+        const {userLogin, content} = req.body
+        const findPostId = await this.postService.getPostsId(postId)
 
+        if (!findPostId) {
+            res.sendStatus(404)
+        } else {
+            const newComment = await this.postService.createCommentByPost(userId!, userLogin!, findPostId.id, content)
+            res.status(201).json(newComment)
+        }
 
     }
+
 
     async getPosts(req: Request, res: Response) {
 
@@ -53,7 +64,6 @@ export class PostController {
             res.sendStatus(404)
             return
         }
-
 
         const newPost = await this.postService.createPost(title, shortDescription, content, blog.id, blog.name)
 

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import {CommentTypeView} from "../types/comment-type";
 
 const CommentsSchema = new mongoose.Schema({
     id: {type: String, required: true},
@@ -12,4 +13,6 @@ const CommentsSchema = new mongoose.Schema({
 
 })
 
-export const CommentsModel = mongoose.model('comments', CommentsSchema)
+export const CommentsModel = mongoose.model<CommentTypeView>('comments', CommentsSchema)
+
+

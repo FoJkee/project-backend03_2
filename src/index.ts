@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import {blogRouter} from "./routers/blog-router";
 import {testingRouter} from "./routers/testing-router";
 import {postRouter} from "./routers/post-router";
+import {userRouter} from "./routers/user-router";
 
 dotenv.config()
 
@@ -19,6 +20,7 @@ app.use(cookieParser())
 
 app.use('/blogs', blogRouter)
 app.use('/posts', postRouter)
+app.use('/users', userRouter)
 app.use('/testing/all-data', testingRouter)
 
 
@@ -28,15 +30,12 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 
-
-
-
 const start = async () => {
-    try{
+    try {
         await mongoose.connect(URL)
         app.listen(PORT, () => console.log(`Server started on port ${PORT}`))
 
-    } catch (e){
+    } catch (e) {
         console.log(e)
         await mongoose.disconnect()
     }

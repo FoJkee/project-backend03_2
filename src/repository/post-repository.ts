@@ -1,5 +1,7 @@
 import {PostModel} from "../models/post-model";
 import {PostType, PostTypeView} from "../types/post-type";
+import {CommentType, CommentTypeView} from "../types/comment-type";
+import {CommentsModel} from "../models/comments-model";
 
 
 export class PostRepository {
@@ -9,8 +11,8 @@ export class PostRepository {
 
     }
 
-    async createCommentByPost() {
-
+    async createCommentByPost(comment: CommentType): Promise<CommentTypeView | null> {
+        return CommentsModel.create(comment)
 
     }
 
@@ -32,7 +34,7 @@ export class PostRepository {
     }
 
     async getPostsId(id: string): Promise<PostTypeView | null> {
-        return PostModel.findOne({id})
+        return PostModel.findOne({id}, {_id: 0, __v: 0})
     }
 
     async updatedPostId(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {

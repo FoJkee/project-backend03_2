@@ -12,8 +12,8 @@ import {postController} from "../container";
 
 export const postRouter = Router({})
 
-postRouter.get('/:id/comments', postController.getCommentByPost.bind(postController))
-postRouter.post('/:id/comments', postController.createCommentByPost.bind(postController))
+postRouter.get('/:postId/comments', postController.getCommentByPost.bind(postController))
+postRouter.post('/:postId/comments', postController.createCommentByPost.bind(postController))
 postRouter.get('/', postController.getPosts.bind(postController))
 postRouter.post('/', PostTitleValidator, PostShortDescriptionValidator, PostContentValidator,
     PostBlogIdValidator, /*customBlogIdValidator*/ errorsMiddleware, postController.createPost.bind(postController))

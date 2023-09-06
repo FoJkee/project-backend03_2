@@ -4,7 +4,7 @@ import {randomUUID} from "crypto";
 export class CommentType {
     constructor(
         public id: string = randomUUID(),
-        public postId: string = randomUUID(),
+        public postId: string,
         public content: string,
         public commentatorInfo: {
             userId: string,
