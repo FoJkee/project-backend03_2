@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import {CommentTypeView} from "../types/comment-type";
+import {CommentType, CommentTypeView} from "../types/comment-type";
 
-const CommentsSchema = new mongoose.Schema({
+const CommentsSchema = new mongoose.Schema<CommentType>({
     id: {type: String, required: true},
     postId: {type: String, required: true},
     content: {type: String, required: true},
@@ -13,6 +13,6 @@ const CommentsSchema = new mongoose.Schema({
 
 })
 
-export const CommentsModel = mongoose.model<CommentTypeView>('comments', CommentsSchema)
+export const CommentsModel = mongoose.model<CommentType>('comments', CommentsSchema)
 
 

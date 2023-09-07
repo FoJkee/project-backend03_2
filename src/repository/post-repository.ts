@@ -12,7 +12,14 @@ export class PostRepository {
     }
 
     async createCommentByPost(comment: CommentType): Promise<CommentTypeView | null> {
-        return CommentsModel.create(comment)
+        await CommentsModel.create(comment)
+        return {
+            id: comment.id,
+            content: comment.content,
+            commentatorInfo: comment.commentatorInfo,
+            createdAt: comment.createdAt
+        }
+
 
     }
 
@@ -61,3 +68,6 @@ export class PostRepository {
     }
 
 }
+
+
+

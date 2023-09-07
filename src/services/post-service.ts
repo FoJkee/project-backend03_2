@@ -2,9 +2,8 @@ import {PostRepository} from "../repository/post-repository";
 import {PostType, PostTypeView} from "../types/post-type";
 import {randomUUID} from "crypto";
 import {CommentType, CommentTypeView} from "../types/comment-type";
-import {UserRepository} from "../repository/user-repository";
+import {UserType, UserTypeView} from "../types/user-type";
 import {UserModel} from "../models/user-model";
-import {PostModel} from "../models/post-model";
 
 
 export class PostService {
@@ -13,13 +12,16 @@ export class PostService {
 
     async getCommentByPost() {
 
+        const filter = {}
+
     }
 
-    async createCommentByPost(userId: string, userLogin: string, postId: string, content: string): Promise<CommentTypeView | null> {
 
-        const user = await UserModel.findOne({userId, userLogin})
-        const post = await PostModel.findOne({postId})
+    // ?????
+    async createCommentByPost(user: UserTypeView, postId: string, content: string): Promise<CommentTypeView | null> {
 
+
+//способ через бд работает
         const createComment = new CommentType(
             randomUUID(),
             postId,

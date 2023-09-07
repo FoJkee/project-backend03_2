@@ -26,8 +26,6 @@ export class UserRepository {
             .limit(pageSize)
     }
 
-
-
     async getUserCount(searchLoginTerm: string | null, searchEmailTerm: string | null): Promise<number> {
         const filter: any = {}
         if (searchLoginTerm) {
@@ -50,8 +48,8 @@ export class UserRepository {
         return UserModel.create(user)
     }
 
-    async getUserLoginOrEmail() {
-
+    async getUserId(id: string) {
+        return UserModel.findOne({id})
     }
 
     async deleteUserId(id: string): Promise<boolean> {

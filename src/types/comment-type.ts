@@ -18,7 +18,6 @@ export class CommentType {
 
 export type CommentTypeView = {
     id: string
-    postId: string
     content: string,
     commentatorInfo: {
         userId: string,

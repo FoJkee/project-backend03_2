@@ -16,16 +16,19 @@ export class PostController {
     }
 
     async createCommentByPost(req: Request, res: Response) {
-        const {postId, userId} = req.params
-        const {userLogin, content} = req.body
-        const findPostId = await this.postService.getPostsId(postId)
+        const {postId} = req.params
+        const {content} = req.body
+        const user: any = req.userId
 
+
+        const findPostId = await this.postService.getPostsId(postId)
         if (!findPostId) {
             res.sendStatus(404)
-        } else {
-            const newComment = await this.postService.createCommentByPost(userId!, userLogin!, findPostId.id, content)
-            res.status(201).json(newComment)
+            return
         }
+        const newComment = await this.postService.createCommentByPost(user, postId, content)
+        res.status(201).json(newComment)
+
 
     }
 
