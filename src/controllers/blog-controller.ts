@@ -46,7 +46,7 @@ export class BlogController {
     }
 
     async getPostForBlog(req: Request, res: Response) {
-        const blogId = req.params.id
+        const {blogId} = req.params
         const {pageNumber, pageSize, sortBy, sortDirection} = pagination(req)
 
         const getPostsForBlog = await this.blogService.getPostForBlog(

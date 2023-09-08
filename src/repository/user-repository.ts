@@ -48,8 +48,8 @@ export class UserRepository {
         return UserModel.create(user)
     }
 
-    async getUserId(id: string) {
-        return UserModel.findOne({id})
+    async getUserId(userId: string) {
+        return UserModel.findOne({userId})
     }
 
     async deleteUserId(id: string): Promise<boolean> {

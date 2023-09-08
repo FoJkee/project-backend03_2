@@ -7,8 +7,19 @@ import {CommentsModel} from "../models/comments-model";
 export class PostRepository {
 
 
-    async getCommentByPost() {
+    async getCommentByPost(postId: string, pageNumber: number,
+                           pageSize: number, sortBy: string, sortDirection: string):Promise<CommentTypeView[]> {
 
+        const filter = {postId}
+        return CommentsModel.find(filter, {_id: 0, __v: 0})
+            .sort({[sortBy]: sortDirection === 'asc' ? 'asc' : "desc"})
+            .skip(pageSize * (pageNumber - 1))
+            .limit(pageSize)
+    }
+
+    async getCommentByPostCount(postId: string): Promise<number> {
+        const filter = {postId}
+        return CommentsModel.countDocuments(filter)
     }
 
     async createCommentByPost(comment: CommentType): Promise<CommentTypeView | null> {

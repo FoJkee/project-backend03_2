@@ -13,6 +13,6 @@ const CommentsSchema = new mongoose.Schema<CommentType>({
 
 })
 
-export const CommentsModel = mongoose.model<CommentType>('comments', CommentsSchema)
+export const CommentsModel = mongoose.model<CommentTypeView>('comments', CommentsSchema)
 
 

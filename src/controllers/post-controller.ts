@@ -1,17 +1,35 @@
-import {NextFunction, Request, Response} from "express";
+import {Request, Response} from "express";
 import {PostService} from "../services/post-service";
 
 import {pagination} from "./paginations";
 import {BlogService} from "../services/blog-service";
-import {UserService} from "../services/user-service";
 
 
 export class PostController {
 
-    constructor(private postService: PostService, private blogService: BlogService, private userService: UserService) {
+    constructor(private postService: PostService, private blogService: BlogService) {
     }
 
     async getCommentByPost(req: Request, res: Response) {
+
+        const {pageNumber, pageSize, sortBy, sortDirection} = pagination(req)
+
+        const {postId} = req.params
+
+        const getComment = await this.postService.getCommentByPost(
+            postId, pageNumber, pageSize, sortBy, sortDirection)
+
+        const countComments: number = await this.postService.getCommentByPostCount(postId)
+
+        const result = {
+            pagesCount: Math.ceil(countComments / pageSize),
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: countComments,
+            items: getComment
+        }
+        res.status(200).json(result)
+
 
     }
 

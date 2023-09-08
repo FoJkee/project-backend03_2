@@ -2,26 +2,25 @@ import {PostRepository} from "../repository/post-repository";
 import {PostType, PostTypeView} from "../types/post-type";
 import {randomUUID} from "crypto";
 import {CommentType, CommentTypeView} from "../types/comment-type";
-import {UserType, UserTypeView} from "../types/user-type";
-import {UserModel} from "../models/user-model";
+import {UserRepository} from "../repository/user-repository";
 
 
 export class PostService {
-    constructor(private postRepository: PostRepository) {
+    constructor(private postRepository: PostRepository, private userRepository: UserRepository) {
     }
 
-    async getCommentByPost() {
-
-        const filter = {}
-
+    async getCommentByPost(postId: string, pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<CommentTypeView[]> {
+        return this.postRepository.getCommentByPost(postId, pageNumber, pageSize, sortBy, sortDirection)
     }
 
+    async getCommentByPostCount(postId: string): Promise<number> {
+        return this.postRepository.getCommentByPostCount(postId)
+    }
 
-    // ?????
-    async createCommentByPost(user: UserTypeView, postId: string, content: string): Promise<CommentTypeView | null> {
+    async createCommentByPost(userId: string, postId: string, content: string): Promise<CommentTypeView | null> {
 
+        const user = await this.userRepository.getUserId(userId)
 
-//способ через бд работает
         const createComment = new CommentType(
             randomUUID(),
             postId,

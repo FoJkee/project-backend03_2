@@ -8,7 +8,6 @@ export class CommentsService {
 
     }
 
-
     async updateCommentsId(id: string, content: string): Promise<boolean> {
         return this.commentsRepository.updateCommentsId(id, content)
 
