@@ -43,14 +43,20 @@ export class UserRepository {
         return UserModel.countDocuments(filter)
     }
 
+    async findUserByEmailOrLogin(loginOrEmail: string) {
+        return UserModel.findOne({$or: [{email: loginOrEmail}, {login: loginOrEmail}]})
+    }
+
 
     async createUser(user: UserType): Promise<UserTypeView | null> {
         return UserModel.create(user)
     }
 
-    async getUserId(userId: string) {
+    async getUserId(userId: string): Promise<UserType | null> {
         return UserModel.findOne({userId})
     }
+
+
 
     async deleteUserId(id: string): Promise<boolean> {
         const result = await UserModel.deleteOne({id})

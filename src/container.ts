@@ -11,6 +11,10 @@ import {UserController} from "./controllers/user-controller";
 import {CommentsRepository} from "./repository/comments-repository";
 import {CommentsService} from "./services/comments-service";
 import {CommentsController} from "./controllers/comments-controller";
+import {AuthController} from "./controllers/auth-controller";
+import {AuthService} from "./services/auth-service";
+import {EmailService} from "./services/email-service";
+import {CustomValidator} from "./validator/custom-validator";
 
 
 const userRepository =  new UserRepository()
@@ -24,11 +28,17 @@ const postRepository = new PostRepository()
 const postService = new PostService(postRepository , userRepository)
 
 // users
-const userService = new UserService(userRepository)
+
 
 // comments
 const commentsRepository = new CommentsRepository()
 const commentsService = new CommentsService(commentsRepository)
+
+
+const authService = new AuthService(userRepository)
+const emailService = new EmailService()
+const userService = new UserService(userRepository, emailService)
+
 
 
 
@@ -38,6 +48,10 @@ export const postController = new PostController(postService, blogService)
 export const userController = new UserController(userService)
 export const testController = new TestingController(blogService, postService, userService)
 export const commentsController = new CommentsController(commentsService)
+export const authController = new AuthController(userService, emailService)
+
+export const customValidator = new CustomValidator(userService)
+
 
 // const PostSvc = new PS(new PostRepo (), BlogRepo)
 

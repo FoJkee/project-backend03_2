@@ -7,6 +7,7 @@ import {testingRouter} from "./routers/testing-router";
 import {postRouter} from "./routers/post-router";
 import {userRouter} from "./routers/user-router";
 import {commentsRouter} from "./routers/comments-router";
+import {authRouter} from "./routers/auth-router";
 
 dotenv.config()
 
@@ -24,6 +25,7 @@ app.use('/posts', postRouter)
 app.use('/users', userRouter)
 app.use('/testing/all-data', testingRouter)
 app.use('/comments', commentsRouter)
+app.use('/', authRouter)
 
 
 app.get('/', (req: Request, res: Response) => {
