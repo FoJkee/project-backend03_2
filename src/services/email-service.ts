@@ -9,6 +9,7 @@ const PASS = process.env.PASS
 export class EmailService {
 
     async sendEmail(email: string, code: string) {
+
         const transporter = await nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -29,7 +30,6 @@ export class EmailService {
         })
 
         return info
-
 
     }
 

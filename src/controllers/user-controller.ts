@@ -37,9 +37,7 @@ export class UserController {
     }
 
     async createUser(req: Request, res: Response) {
-
         const {login, email, password} = req.body
-
         const newUser = await this.userService.createUser(login, email, password)
         if (newUser) {
             res.status(201).json(newUser)

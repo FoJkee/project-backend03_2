@@ -14,7 +14,6 @@ export class BlogRepository {
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
 
-
     }
 
     async getBlogsCount(searchNameTerm: string): Promise<number> {

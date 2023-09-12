@@ -1,52 +1,31 @@
 import {NextFunction, Request, Response} from "express";
-import {UserModel} from "../models/user-model";
 import {UserService} from "../services/user-service";
-import {log} from "util";
+import {body} from "express-validator";
+import {BlogService} from "../services/blog-service";
+import {tr} from "date-fns/locale";
 
-
-// export const customBlogIdValidator = body('blogId').custom(async (name, {req}) => {
-//         const blogData = await blogService.getBlogId(name)
-//         if (!blogData) throw new Error()
-//         req.body.blogName = blogData.name
-//         return true
-//     }
-// )
 
 export class CustomValidator {
 
-    constructor(private userService: UserService) {
+    constructor(private userService: UserService, private blogService: BlogService) {
     }
 
-    async customLoginOrEmailExist(req: Request, res: Response, next: NextFunction) {
+    customBlogIdValidator = body('blogId').custom(async (name) => {
+        const blogData = await this.blogService.getBlogId(name)
+        if (!blogData) throw new Error()
+        return true
+    })
 
-        const {login, email} = req.body
+    customLoginValidator = body('login').custom(async (login) => {
+        const loginData = await this.userService.findUserByLogin(login)
+        if (loginData) throw new Error('login exists')
+        return true
+    })
 
-        const loginUser = await this.userService.findUserByEmailOrLogin(login)
+    customEmailValidator = body('email').custom(async (email) => {
+        const emailData = await this.userService.findUserByEmail(email)
+        if (emailData) throw new Error('email exists')
+        return true
 
-        const emailUser = await this.userService.findUserByEmailOrLogin(email)
-
-
-        if (loginUser) {
-            res.status(400).json({
-                errorsMessages: [{
-                    message: 'login is already exist',
-                    field: 'login'
-                }]
-            })
-
-        }
-
-        if (emailUser) {
-            res.status(400).json({
-                errorsMessages: [{
-                    message: 'email is already exist',
-                    field: 'email'
-                }]
-            })
-            return
-
-        }
-        next()
-    }
-
+    })
 }

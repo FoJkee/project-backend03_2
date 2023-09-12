@@ -73,11 +73,11 @@ export class BlogController {
 
         const blog = await this.blogService.getBlogId(blogId)
         if (!blog) {
-            res.sendStatus(404)
+             res.sendStatus(404)
             return
         }
         const newPost = await this.postService.createPost(title, shortDescription, content,
-            blog.id, blog.name)
+            blog.id)
 
         if (newPost) {
             res.status(201).json(newPost)

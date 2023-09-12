@@ -86,7 +86,7 @@ export class PostController {
             return
         }
 
-        const newPost = await this.postService.createPost(title, shortDescription, content, blog.id, blog.name)
+        const newPost = await this.postService.createPost(title, shortDescription, content, blog.id)
 
         if (newPost) {
             res.status(201).json(newPost)

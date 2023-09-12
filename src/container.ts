@@ -20,12 +20,12 @@ import {CustomValidator} from "./validator/custom-validator";
 const userRepository =  new UserRepository()
 
 // blogs
-const blogRepository = new BlogRepository()
-const blogService = new BlogService(blogRepository)
+export const blogRepository = new BlogRepository()
+export const blogService = new BlogService(blogRepository)
 
 // posts
 const postRepository = new PostRepository()
-const postService = new PostService(postRepository , userRepository)
+const postService = new PostService(postRepository , userRepository, blogRepository)
 
 // users
 
@@ -50,7 +50,7 @@ export const testController = new TestingController(blogService, postService, us
 export const commentsController = new CommentsController(commentsService)
 export const authController = new AuthController(userService, emailService)
 
-export const customValidator = new CustomValidator(userService)
+export const customValidator = new CustomValidator(userService, blogService)
 
 
 // const PostSvc = new PS(new PostRepo (), BlogRepo)

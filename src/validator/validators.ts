@@ -1,13 +1,14 @@
 import {body} from "express-validator";
 
 
+
 export const BlogNameValidator = body('name')
     .trim()
     .notEmpty()
     .withMessage('name is required')
     .isString()
     .isLength({min: 1, max: 15})
-    .withMessage('name should 2 - 15 symbols')
+    .withMessage('name should 1 - 15 symbols')
 
 export const BlogDescriptionValidator = body('description')
     .trim()
@@ -48,13 +49,23 @@ export const PostContentValidator = body('content')
     .notEmpty()
     .withMessage('content is required')
     .isString()
-    .isLength({min: 20, max: 300})
-    .withMessage('content should 20 - 300 symbols')
+    .isLength({min: 1, max: 300})
+    .withMessage('content should 1 - 300 symbols')
 
 export const PostBlogIdValidator = body('blogId')
     .trim()
     .isString()
     .withMessage('blogId is required')
+
+export const CommentContentValidator = body('content')
+    .trim()
+    .notEmpty()
+    .withMessage('content is required')
+    .isString()
+    .isLength({min: 1, max: 300})
+    .withMessage('content should 1 - 300 symbols')
+
+
 
 export const UserLoginValidator = body('login')
     .trim()

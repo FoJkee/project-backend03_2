@@ -43,8 +43,16 @@ export class UserRepository {
         return UserModel.countDocuments(filter)
     }
 
-    async findUserByEmailOrLogin(loginOrEmail: string) {
-        return UserModel.findOne({$or: [{email: loginOrEmail}, {login: loginOrEmail}]})
+    // async findUserByEmailOrLogin(loginOrEmail: string) {
+    //     return UserModel.findOne({$or: [{email: loginOrEmail}, {login: loginOrEmail}]})
+    // }
+
+    async findUserByLogin(login: string) {
+        return UserModel.findOne({login})
+    }
+
+    async findUserByEmail(email: string) {
+        return UserModel.findOne({email})
     }
 
 

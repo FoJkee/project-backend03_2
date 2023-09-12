@@ -3,10 +3,14 @@ import {PostType, PostTypeView} from "../types/post-type";
 import {randomUUID} from "crypto";
 import {CommentType, CommentTypeView} from "../types/comment-type";
 import {UserRepository} from "../repository/user-repository";
+import {blogRepository} from "../container";
+import {BlogRepository} from "../repository/blog-repository";
 
 
 export class PostService {
-    constructor(private postRepository: PostRepository, private userRepository: UserRepository) {
+    constructor(private postRepository: PostRepository,
+                private userRepository: UserRepository,
+                private blogRepository: BlogRepository) {
     }
 
     async getCommentByPost(postId: string, pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<CommentTypeView[]> {
@@ -42,17 +46,22 @@ export class PostService {
         return this.postRepository.getCountPosts()
     }
 
-    async createPost(title: string, shortDescription: string, content: string, blogId: string, blogName: string): Promise<PostTypeView | null> {
+    async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostTypeView | null> {
+        const id = randomUUID()
+        const blog = await this.blogRepository.getBlogId(blogId)
+        const blogName = blog!.name
 
         const newPost = new PostType(
-            randomUUID(),
+            id,
             title,
             shortDescription,
             content,
             blogId,
             blogName
         )
+
         return this.postRepository.createPost(newPost)
+
 
     }
 

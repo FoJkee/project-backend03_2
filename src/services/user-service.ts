@@ -19,9 +19,14 @@ export class UserService {
         return this.userRepository.getUserCount(searchLoginTerm, searchEmailTerm)
     }
 
-    async findUserByEmailOrLogin(loginOrEmail: string) {
-        return this.userRepository.findUserByEmailOrLogin(loginOrEmail)
+    async findUserByLogin(login: string) {
+        return this.userRepository.findUserByLogin(login)
     }
+
+    async findUserByEmail(email: string) {
+        return this.userRepository.findUserByEmail(email)
+    }
+
 
     async getUserId(userId: string): Promise<UserType | null> {
         return this.userRepository.getUserId(userId)
