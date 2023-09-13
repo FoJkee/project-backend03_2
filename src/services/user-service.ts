@@ -3,11 +3,11 @@ import {UserType, UserTypeView} from "../types/user-type";
 import {randomUUID} from "crypto";
 import bcrypt from 'bcrypt'
 import dateFns from 'date-fns/addMinutes'
-import {EmailService} from "./email-service";
+import {UserModel} from "../models/user-model";
 
 export class UserService {
 
-    constructor(private userRepository: UserRepository, private emailService: EmailService) {
+    constructor(private userRepository: UserRepository) {
     }
 
     async getUser(sortBy: string, sortDirection: string, pageNumber: number,
@@ -27,12 +27,13 @@ export class UserService {
         return this.userRepository.findUserByEmail(email)
     }
 
+    async findUserByEmailOrLogin(loginOrEmail: string): Promise<UserTypeView | null> {
+        return this.userRepository.findUserByEmailOrLogin(loginOrEmail)
+    }
 
     async getUserId(userId: string): Promise<UserType | null> {
         return this.userRepository.getUserId(userId)
-
     }
-
 
 
     async createUser(login: string, email: string, password: string): Promise<UserTypeView | null> {
@@ -67,7 +68,10 @@ export class UserService {
 
     async _generateHash(password: string, salt: string): Promise<string> {
         return bcrypt.hash(password, salt)
+    }
 
+    async _compareHash(password: string, user: UserTypeView) {
+        return bcrypt.compare(password, user.passwordHash)
     }
 
 }

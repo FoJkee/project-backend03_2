@@ -1,14 +1,16 @@
 import {Router} from "express";
 import {customValidator, userController} from "../container";
-import {authBasicAuthMiddleware} from "../validator/authBasicAuthMiddleware";
+import {authBasicMiddleware} from "../validator/authBasicMiddleware";
 import {UserEmailValidator, UserLoginValidator, UserPasswordValidator} from "../validator/validators";
+import {errorsMiddleware} from "../validator/errorsMiddleware";
 
 
 export const userRouter = Router({})
 
-userRouter.get('/', authBasicAuthMiddleware, userController.getUser.bind(userController))
+userRouter.get('/', authBasicMiddleware, userController.getUser.bind(userController))
 
-userRouter.post('/', authBasicAuthMiddleware, UserLoginValidator, UserPasswordValidator, UserEmailValidator,
+userRouter.post('/', authBasicMiddleware, UserLoginValidator, UserPasswordValidator, UserEmailValidator,
+    errorsMiddleware,
     userController.createUser.bind(userController))
 
-userRouter.delete('/:id', authBasicAuthMiddleware, userController.deleteUserId.bind(userController))
+userRouter.delete('/:id', authBasicMiddleware, userController.deleteUserId.bind(userController))

@@ -1,15 +1,22 @@
-import {UserRepository} from "../repository/user-repository";
+import {UserService} from "./user-service";
 
 
 export class AuthService {
 
-    constructor(private userRepository: UserRepository) {
+    constructor(private userService: UserService) {
+
     }
 
+    async checkCredential(loginOrEmail: string, password: string) {
 
-    async (email: string, code: string){
+        const user = await this.userService.findUserByEmailOrLogin(loginOrEmail)
+        if (!user) return null
 
-        
+        const result = await this.userService._compareHash(password, user)
+        if (!result) return null
+
+        return result
+
     }
 
 

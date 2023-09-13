@@ -11,3 +11,4 @@ authRouter.post('/registration', UserLoginValidator, UserPasswordValidator, User
     customValidator.customEmailValidator.bind(customValidator),
     customValidator.customLoginValidator.bind(customValidator), errorsMiddleware,
     authController.registration.bind(authController))
+

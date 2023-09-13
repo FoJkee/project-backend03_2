@@ -55,6 +55,10 @@ export class UserRepository {
         return UserModel.findOne({email})
     }
 
+    async findUserByEmailOrLogin(loginOrEmail: string): Promise<UserTypeView | null>{
+        return UserModel.findOne({$or: [{email: loginOrEmail} , {login: loginOrEmail}]})
+    }
+
 
     async createUser(user: UserType): Promise<UserTypeView | null> {
         return UserModel.create(user)

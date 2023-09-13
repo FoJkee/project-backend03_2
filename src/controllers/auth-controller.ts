@@ -1,21 +1,15 @@
 import {Request, Response} from "express";
 import {UserService} from "../services/user-service";
-import {EmailService} from "../services/email-service";
-import {fi} from "date-fns/locale";
+import {randomUUID} from "crypto";
+import {AuthService} from "../services/auth-service";
+import {JwtService} from "../services/jwt-service";
 
 
 export class AuthController {
 
-    constructor(private userService: UserService, private emailService: EmailService) {
-    }
-
-    private errMes = (value: string) => {
-        return {
-            errorsMessages: [{
-                message: `${value} created`,
-                field: `${value}`
-            }]
-        }
+    constructor(private userService: UserService,
+                private authService: AuthService,
+                private jwtService: JwtService) {
     }
 
 
@@ -44,6 +38,22 @@ export class AuthController {
     }
 
     async login(req: Request, res: Response) {
+        const deviceName = req.headers['user-agent']
+        const deviceId = randomUUID()
+
+        const {loginOrEmail, password} = req.body
+
+        const user = await this.authService.checkCredential(loginOrEmail, password)
+
+        if(!user) {
+            res.sendStatus(401)
+        } else {
+            // const token = await this.jwtService.createJwtAccessToken(user)
+        }
+
+
+
+
 
 
 

@@ -13,8 +13,7 @@ export class UserType {
             expirationDate: Date,
             isConfirmed: boolean
         }
-    ) {
-    }
+    ) {}
 }
 
 export type UserTypeView = {

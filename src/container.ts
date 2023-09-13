@@ -15,6 +15,7 @@ import {AuthController} from "./controllers/auth-controller";
 import {AuthService} from "./services/auth-service";
 import {EmailService} from "./services/email-service";
 import {CustomValidator} from "./validator/custom-validator";
+import {JwtService} from "./services/jwt-service";
 
 
 const userRepository =  new UserRepository()
@@ -35,9 +36,11 @@ const commentsRepository = new CommentsRepository()
 const commentsService = new CommentsService(commentsRepository)
 
 
-const authService = new AuthService(userRepository)
 const emailService = new EmailService()
-const userService = new UserService(userRepository, emailService)
+export const userService = new UserService(userRepository)
+
+export const jwtService = new JwtService()
+export const authService = new AuthService(userService)
 
 
 
@@ -48,8 +51,7 @@ export const postController = new PostController(postService, blogService)
 export const userController = new UserController(userService)
 export const testController = new TestingController(blogService, postService, userService)
 export const commentsController = new CommentsController(commentsService)
-export const authController = new AuthController(userService, emailService)
-
+export const authController = new AuthController(userService, authService, jwtService)
 export const customValidator = new CustomValidator(userService, blogService)
 
 

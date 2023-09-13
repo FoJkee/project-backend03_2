@@ -26,6 +26,5 @@ export class CustomValidator {
         const emailData = await this.userService.findUserByEmail(email)
         if (emailData) throw new Error('email exists')
         return true
-
     })
 }
