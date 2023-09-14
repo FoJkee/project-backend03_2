@@ -13,12 +13,14 @@ import {CommentsService} from "./services/comments-service";
 import {CommentsController} from "./controllers/comments-controller";
 import {AuthController} from "./controllers/auth-controller";
 import {AuthService} from "./services/auth-service";
-import {EmailService} from "./services/email-service";
 import {CustomValidator} from "./validator/custom-validator";
 import {JwtService} from "./services/jwt-service";
+import {SecurityDeviceService} from "./services/securityDevice-service";
+import {SecurityDeviceRepository} from "./repository/securityDevice-repository";
+import {SecurityDeviceController} from "./controllers/securityDevice-controller";
 
 
-const userRepository =  new UserRepository()
+const userRepository = new UserRepository()
 
 // blogs
 export const blogRepository = new BlogRepository()
@@ -26,9 +28,7 @@ export const blogService = new BlogService(blogRepository)
 
 // posts
 const postRepository = new PostRepository()
-const postService = new PostService(postRepository , userRepository, blogRepository)
-
-// users
+const postService = new PostService(postRepository, userRepository, blogRepository)
 
 
 // comments
@@ -36,11 +36,13 @@ const commentsRepository = new CommentsRepository()
 const commentsService = new CommentsService(commentsRepository)
 
 
-const emailService = new EmailService()
 export const userService = new UserService(userRepository)
 
 export const jwtService = new JwtService()
 export const authService = new AuthService(userService)
+
+const securityDeviceRepository = new SecurityDeviceRepository()
+export const securityDeviceService = new SecurityDeviceService(securityDeviceRepository)
 
 
 
@@ -49,11 +51,10 @@ export const authService = new AuthService(userService)
 export const blogController = new BlogController(blogService, postService)
 export const postController = new PostController(postService, blogService)
 export const userController = new UserController(userService)
-export const testController = new TestingController(blogService, postService, userService)
+export const testController = new TestingController(blogService, postService, userService, securityDeviceService)
 export const commentsController = new CommentsController(commentsService)
-export const authController = new AuthController(userService, authService, jwtService)
+export const authController = new AuthController(userService, authService, jwtService, securityDeviceService)
 export const customValidator = new CustomValidator(userService, blogService)
+export const securityDeviceController = new SecurityDeviceController(securityDeviceService, jwtService)
 
-
-// const PostSvc = new PS(new PostRepo (), BlogRepo)
 

@@ -3,13 +3,19 @@ import {UserService} from "../services/user-service";
 import {randomUUID} from "crypto";
 import {AuthService} from "../services/auth-service";
 import {JwtService} from "../services/jwt-service";
+import {SecurityDeviceRepository} from "../repository/securityDevice-repository";
+import {securityDeviceService} from "../container";
+import {SecurityDeviceService} from "../services/securityDevice-service";
+import {tr} from "date-fns/locale";
 
 
 export class AuthController {
 
     constructor(private userService: UserService,
                 private authService: AuthService,
-                private jwtService: JwtService) {
+                private jwtService: JwtService,
+                private securityDeviceService: SecurityDeviceService
+    ) {
     }
 
 
@@ -38,23 +44,23 @@ export class AuthController {
     }
 
     async login(req: Request, res: Response) {
-        const deviceName = req.headers['user-agent']
+
+        const deviceName = req.headers['user-agent'] || ''
         const deviceId = randomUUID()
+        const ip = req.ip
 
         const {loginOrEmail, password} = req.body
 
         const user = await this.authService.checkCredential(loginOrEmail, password)
 
-        if(!user) {
-            res.sendStatus(401)
-        } else {
-            // const token = await this.jwtService.createJwtAccessToken(user)
-        }
+        if (!user) return res.sendStatus(401)
 
-
-
-
-
+        const accessToken = await this.jwtService.createJwtAccessToken(user)
+        const refreshToken = await this.jwtService.createJwtRefreshToken(user, deviceId)
+        const lastActiveDate = await this.jwtService.getLastActiveDateFromToken(refreshToken)
+        await this.securityDeviceService.createDevice(user.id, deviceId, ip, deviceName, lastActiveDate)
+        res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
+        return res.status(200).json(accessToken)
 
 
     }

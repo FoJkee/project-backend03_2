@@ -8,6 +8,8 @@ import {postRouter} from "./routers/post-router";
 import {userRouter} from "./routers/user-router";
 import {commentsRouter} from "./routers/comments-router";
 import {authRouter} from "./routers/auth-router";
+import {securityDeviceRouter} from "./routers/securityDevice-router";
+import bodyParser from "body-parser";
 
 dotenv.config()
 
@@ -18,6 +20,9 @@ const app = express()
 
 app.use(express.json())
 app.use(cookieParser())
+app.use(bodyParser.json())
+app.set('trust proxy', true)
+
 
 
 app.use('/blogs', blogRouter)
@@ -26,6 +31,7 @@ app.use('/users', userRouter)
 app.use('/testing/all-data', testingRouter)
 app.use('/comments', commentsRouter)
 app.use('/', authRouter)
+app.use('/devices', securityDeviceRouter)
 
 
 app.get('/', (req: Request, res: Response) => {

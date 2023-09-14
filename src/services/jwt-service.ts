@@ -10,8 +10,6 @@ const jwtSecret = process.env.JWT_SECRET || ''
 
 
 export class JwtService {
-
-
     async createJwtAccessToken(user: UserTypeView): Promise<string> {
         return jwt.sign({userId: user.id}, jwtSecret, {expiresIn: '1000'})
     }
@@ -30,6 +28,11 @@ export class JwtService {
         } catch {
             return null
         }
+    }
+
+    async getLastActiveDateFromToken(token: string): Promise<string>{
+        const result: any = await jwt.decode(token)
+        return new Date(result!.iat * 1000).toISOString()
     }
 
 }

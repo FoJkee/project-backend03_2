@@ -1,4 +1,5 @@
 import {UserService} from "./user-service";
+import {UserTypeView} from "../types/user-type";
 
 
 export class AuthService {
@@ -7,7 +8,7 @@ export class AuthService {
 
     }
 
-    async checkCredential(loginOrEmail: string, password: string) {
+    async checkCredential(loginOrEmail: string, password: string): Promise<UserTypeView | null> {
 
         const user = await this.userService.findUserByEmailOrLogin(loginOrEmail)
         if (!user) return null
@@ -15,7 +16,7 @@ export class AuthService {
         const result = await this.userService._compareHash(password, user)
         if (!result) return null
 
-        return result
+        return user
 
     }
 
