@@ -18,6 +18,7 @@ import {JwtService} from "./services/jwt-service";
 import {SecurityDeviceService} from "./services/securityDevice-service";
 import {SecurityDeviceRepository} from "./repository/securityDevice-repository";
 import {SecurityDeviceController} from "./controllers/securityDevice-controller";
+import {EmailService} from "./services/email-service";
 
 
 const userRepository = new UserRepository()
@@ -44,7 +45,7 @@ export const authService = new AuthService(userService)
 const securityDeviceRepository = new SecurityDeviceRepository()
 export const securityDeviceService = new SecurityDeviceService(securityDeviceRepository)
 
-
+const emailService = new EmailService()
 
 
 // controllers
@@ -53,7 +54,7 @@ export const postController = new PostController(postService, blogService)
 export const userController = new UserController(userService)
 export const testController = new TestingController(blogService, postService, userService, securityDeviceService)
 export const commentsController = new CommentsController(commentsService)
-export const authController = new AuthController(userService, authService, jwtService, securityDeviceService)
+export const authController = new AuthController(userService, authService, jwtService, securityDeviceService, emailService)
 export const customValidator = new CustomValidator(userService, blogService)
 export const securityDeviceController = new SecurityDeviceController(securityDeviceService, jwtService)
 

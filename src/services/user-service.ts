@@ -31,7 +31,7 @@ export class UserService {
         return this.userRepository.findUserByEmailOrLogin(loginOrEmail)
     }
 
-    async getUserId(userId: string): Promise<UserType | null> {
+    async getUserId(userId: string): Promise<UserTypeView | null> {
         return this.userRepository.getUserId(userId)
     }
 
@@ -57,6 +57,29 @@ export class UserService {
         return this.userRepository.createUser(newUser)
 
     }
+
+    async findUserByConfirmationCode(code: string){
+        return this.userRepository.findUserByConfirmationCode(code)
+    }
+
+    async findUserAndUpdateByConfirmationCode(code: string): Promise<UserTypeView | null>{
+       return this.userRepository.findUserAndUpdateByConfirmationCode(code)
+    }
+
+    async updateUserByConfirmationCode(id: string){
+        return this.userRepository.updateUserByConfirmationCode(id)
+    }
+
+    async updateUserPassword(newPassword: string, id: string){
+        const user = await this.getUserId(id)
+        if(!user) return null
+
+        const salt = await bcrypt.genSalt(10)
+        const passwordHash = await bcrypt.hash(newPassword, salt)
+
+        return this.userRepository.updateUserPassword(passwordHash, id)
+    }
+
 
     async deleteUserId(id: string): Promise<boolean> {
         return this.userRepository.deleteUserId(id)

@@ -11,11 +11,11 @@ const jwtSecret = process.env.JWT_SECRET || ''
 
 export class JwtService {
     async createJwtAccessToken(user: UserTypeView): Promise<string> {
-        return jwt.sign({userId: user.id}, jwtSecret, {expiresIn: '1000'})
+        return jwt.sign({userId: user.id}, jwtSecret, {expiresIn: '1000s'})
     }
 
-    async createJwtRefreshToken(user: UserType, deviceId: string): Promise<string> {
-        return jwt.sign({userId: user.id, deviceId}, jwtSecret, {expiresIn: "2000"})
+    async createJwtRefreshToken(user: UserTypeView, deviceId: string): Promise<string> {
+        return jwt.sign({userId: user.id, deviceId}, jwtSecret, {expiresIn: "2000s"})
     }
 
     async verifyUserById(token: string): Promise<TokenPayload | null> {

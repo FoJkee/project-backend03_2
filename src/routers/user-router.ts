@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {customValidator, userController} from "../container";
+import {userController} from "../container";
 import {authBasicMiddleware} from "../validator/authBasicMiddleware";
 import {UserEmailValidator, UserLoginValidator, UserPasswordValidator} from "../validator/validators";
 import {errorsMiddleware} from "../validator/errorsMiddleware";

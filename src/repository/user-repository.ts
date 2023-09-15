@@ -1,5 +1,7 @@
 import {UserModel} from "../models/user-model";
 import {UserType, UserTypeView} from "../types/user-type";
+import dateFns from "date-fns/addMinutes";
+import {randomUUID} from "crypto";
 
 
 export class UserRepository {
@@ -43,9 +45,34 @@ export class UserRepository {
         return UserModel.countDocuments(filter)
     }
 
-    // async findUserByEmailOrLogin(loginOrEmail: string) {
-    //     return UserModel.findOne({$or: [{email: loginOrEmail}, {login: loginOrEmail}]})
-    // }
+    async findUserByConfirmationCode(code: string) {
+        return UserModel.findOne({"emailConfirmation.isConfirmed": code})
+    }
+
+
+    async updateUserPassword(passwordHash: string, id: string) {
+        return UserModel.findOneAndUpdate({id}, {
+                passwordHash,
+                "emailConfirmation.codeConfirmation": randomUUID(),
+                "emailConfirmation.expirationDate": dateFns(new Date(), 10),
+                "emailConfirmation.isConfirmed": false
+            }
+        )
+    }
+
+    async findUserAndUpdateByConfirmationCode(code: string): Promise<UserTypeView | null> {
+        return UserModel.findOneAndUpdate({'emailConfirmation.codeConfirmation': code},
+            {'emailConfirmation.isConfirmed': true})
+    }
+
+    async updateUserByConfirmationCode(id: string) {
+        return UserModel.findOneAndUpdate({id},
+            {
+                "emailConfirmation.codeConfirmation": randomUUID(),
+                "emailConfirmation.expirationDate": dateFns(new Date(), 10),
+                "emailConfirmation.isConfirmed": false
+            })
+    }
 
     async findUserByLogin(login: string) {
         return UserModel.findOne({login})
@@ -55,8 +82,11 @@ export class UserRepository {
         return UserModel.findOne({email})
     }
 
-    async findUserByEmailOrLogin(loginOrEmail: string): Promise<UserTypeView | null>{
-        return UserModel.findOne({$or: [{email: loginOrEmail} , {login: loginOrEmail}]})
+    async findUserByEmailOrLogin(loginOrEmail: string): Promise<UserTypeView | null> {
+        return UserModel.findOne({
+            $or: [{email: loginOrEmail},
+                {login: loginOrEmail}]
+        })
     }
 
 
@@ -64,10 +94,9 @@ export class UserRepository {
         return UserModel.create(user)
     }
 
-    async getUserId(userId: string): Promise<UserType | null> {
+    async getUserId(userId: string): Promise<UserTypeView | null> {
         return UserModel.findOne({userId})
     }
-
 
 
     async deleteUserId(id: string): Promise<boolean> {

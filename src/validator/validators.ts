@@ -94,3 +94,9 @@ export const UserEmailValidator = body('email')
     .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
     .withMessage('not correct')
 
+export const LoginOrEmailValidator = body('loginOrEmail')
+    .trim()
+    .notEmpty()
+    .isString()
+    .withMessage('loginOrEmail is required')
+

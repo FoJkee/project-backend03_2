@@ -1,6 +1,11 @@
 import {Router} from "express";
 import {authController, customValidator} from "../container";
-import {UserEmailValidator, UserLoginValidator, UserPasswordValidator} from "../validator/validators";
+import {
+    LoginOrEmailValidator,
+    UserEmailValidator,
+    UserLoginValidator,
+    UserPasswordValidator
+} from "../validator/validators";
 import {errorsMiddleware} from "../validator/errorsMiddleware";
 
 
@@ -12,6 +17,18 @@ authRouter.post('/registration', UserLoginValidator, UserPasswordValidator, User
     customValidator.customLoginValidator.bind(customValidator), errorsMiddleware,
     authController.registration.bind(authController))
 
-authRouter.post('/login', UserLoginValidator, UserPasswordValidator, errorsMiddleware,
-    authController.login.bind(authController))
+authRouter.post('/login', LoginOrEmailValidator, UserPasswordValidator,
+    errorsMiddleware, authController.login.bind(authController))
+
+authRouter.post('/logout', authController.logout.bind(authController))
+
+authRouter.get('/me', authController.me.bind(authController))
+
+authRouter.post('/registration-confirmation', errorsMiddleware,
+    authController.registrationConformation.bind(authController))
+
+authRouter.post('/registration-email-resending', errorsMiddleware,
+    authController.registrationEmailResending.bind(authController))
+
+
 

@@ -30,7 +30,7 @@ app.use('/posts', postRouter)
 app.use('/users', userRouter)
 app.use('/testing/all-data', testingRouter)
 app.use('/comments', commentsRouter)
-app.use('/', authRouter)
+app.use('/auth', authRouter)
 app.use('/devices', securityDeviceRouter)
 
 
