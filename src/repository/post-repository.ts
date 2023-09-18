@@ -8,7 +8,7 @@ export class PostRepository {
 
 
     async getCommentByPost(postId: string, pageNumber: number,
-                           pageSize: number, sortBy: string, sortDirection: string):Promise<CommentTypeView[]> {
+                           pageSize: number, sortBy: string, sortDirection: string): Promise<CommentTypeView[]> {
 
         const filter = {postId}
         return CommentsModel.find(filter, {_id: 0, __v: 0})
@@ -58,10 +58,13 @@ export class PostRepository {
     async updatedPostId(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
         const result = await PostModel.updateOne({id},
             {
-                title,
-                shortDescription,
-                content,
-                blogId
+                $set:
+                    {
+                        title,
+                        shortDescription,
+                        content,
+                        blogId
+                    }
             })
         return result.matchedCount === 1
 

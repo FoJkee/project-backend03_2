@@ -34,9 +34,16 @@ export class AuthController {
 
         const createUser = await this.userService.createUser(login, email, password)
 
-        // if (createUser) {
-        //    return await this.emailService.sendEmail(email, createUser!.emailConformation.codeConfirmation)
-        // }
+        if (createUser) {
+            return await this.emailService.sendEmail(email,
+                "Registration",
+                `<h1>Registation</h1>
+            <p>To finish registration please follow the link below:
+             <a href='https://somesite.com/confirm-email?code=${
+                    createUser!.emailConformation.codeConfirmation}'>complete registration</a>
+            </p>`
+            )
+        }
         return createUser ? res.sendStatus(204) : res.sendStatus(400)
 
     }
@@ -97,21 +104,54 @@ export class AuthController {
 
     async passwordRecovery(req: Request, res: Response) {
 
+        const {email} = req.body
+
+        const user = await this.userService.findUserByEmailOrLogin(email)
+        if (!user) return res.sendStatus(400)
+        const updateUser = await this.userService.updateUserByConfirmationCode(user.id)
+        if (!updateUser) return res.sendStatus(400)
+        await this.emailService.sendEmail(email,
+            "Email resending confirmation",
+            `<h1>Password recovery confirmation</h1>
+            <p>To finish password recovery please follow the link below:
+             <a href='https://somesite.com/confirm-email?code=${
+                updateUser!.emailConformation.codeConfirmation}'>recovery password</a>
+            </p>`)
+        return res.sendStatus(204)
     }
 
     async newPassword(req: Request, res: Response) {
+
         const {newPassword, recoveryCode} = req.body
         const user = await this.userService.findUserByConfirmationCode(recoveryCode)
         const updateUser = await this.userService.updateUserPassword(newPassword, user!.id)
 
-        if(!updateUser) return res.sendStatus(400)
+        if (!updateUser) return res.sendStatus(400)
 
         return res.sendStatus(204)
-
-
     }
 
+// обновляем через юзера или через девайс?
     async refreshToken(req: Request, res: Response) {
+
+        const deviceName = req.headers['user-agent'] || ''
+        const refreshToken = req.body.refreshToken
+
+        const payloadToken = await this.jwtService.getLastActiveDateFromToken(refreshToken)
+        if (!payloadToken) return res.sendStatus(401)
+
+        const dataToken = await this.jwtService.verifyUserById(refreshToken)
+        const user = await this.userService.getUserId(dataToken!.userId)
+
+        const accessToken = await this.jwtService.createJwtAccessToken(user!)
+        const newRefreshToken = await this.jwtService.createJwtRefreshToken(user!, dataToken!.deviceId)
+
+        const newPayloadToken = await this.jwtService.getLastActiveDateFromToken(newRefreshToken)
+
+        await this.securityDeviceService.updateDevice(user!.id, deviceName, newPayloadToken, dataToken!.deviceId)
+        res.cookie('refreshToken', newRefreshToken, {httpOnly: true, secure: true})
+        return res.status(200).json({accessToken: accessToken})
+
 
     }
 
@@ -130,7 +170,13 @@ export class AuthController {
         const updateUser = await this.userService.updateUserByConfirmationCode(user.id)
 
         const sendEmail = await this.emailService.sendEmail(email,
-            updateUser!.emailConformation.codeConfirmation)
+            "Email resending confirmation",
+            `<h1>Email resending confirmation</h1>
+            <p>To finish email resending please follow the link below:
+             <a href='https://somesite.com/confirm-email?code=${
+                updateUser!.emailConformation.codeConfirmation}'>complete registration</a>
+            </p>`
+        )
 
         if (!sendEmail) return res.sendStatus(404)
 

@@ -8,6 +8,10 @@ export class SecurityDeviceRepository {
         return DeviceModel.create(newDevice)
     }
 
+    async updateDevice(userId: string, title: string, lastActiveDate: string, deviceId: string) {
+        return DeviceModel.findOneAndUpdate({userId}, {$set: {title, lastActiveDate, deviceId}})
+    }
+
     async getDeviceId(deviceId: string): Promise<SecurityDeviceTypeView | null> {
         return DeviceModel.findOne({deviceId})
     }

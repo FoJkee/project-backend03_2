@@ -5,7 +5,7 @@ import {CommentTypeView} from "../types/comment-type";
 export class CommentsRepository {
 
     async updateCommentsId(id: string, content: string): Promise<boolean> {
-        const result = await CommentsModel.updateOne({id}, {content})
+        const result = await CommentsModel.updateOne({id}, {$set: {content}})
         return result.matchedCount === 1
 
     }

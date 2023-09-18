@@ -52,25 +52,31 @@ export class UserRepository {
 
     async updateUserPassword(passwordHash: string, id: string) {
         return UserModel.findOneAndUpdate({id}, {
-                passwordHash,
-                "emailConfirmation.codeConfirmation": randomUUID(),
-                "emailConfirmation.expirationDate": dateFns(new Date(), 10),
-                "emailConfirmation.isConfirmed": false
+                $set:
+                    {
+                        passwordHash,
+                        "emailConfirmation.codeConfirmation": randomUUID(),
+                        "emailConfirmation.expirationDate": dateFns(new Date(), 10),
+                        "emailConfirmation.isConfirmed": false
+                    }
             }
         )
     }
 
     async findUserAndUpdateByConfirmationCode(code: string): Promise<UserTypeView | null> {
         return UserModel.findOneAndUpdate({'emailConfirmation.codeConfirmation': code},
-            {'emailConfirmation.isConfirmed': true})
+            {$set: {'emailConfirmation.isConfirmed': true}})
     }
 
     async updateUserByConfirmationCode(id: string) {
         return UserModel.findOneAndUpdate({id},
             {
-                "emailConfirmation.codeConfirmation": randomUUID(),
-                "emailConfirmation.expirationDate": dateFns(new Date(), 10),
-                "emailConfirmation.isConfirmed": false
+                $set:
+                    {
+                        "emailConfirmation.codeConfirmation": randomUUID(),
+                        "emailConfirmation.expirationDate": dateFns(new Date(), 10),
+                        "emailConfirmation.isConfirmed": false
+                    }
             })
     }
 

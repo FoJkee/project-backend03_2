@@ -46,9 +46,12 @@ export class BlogRepository {
 
     async updateBlogId(id: string, name: string, description: string, websiteUrl: string): Promise<boolean> {
         const result = await BlogModels.updateOne({id}, {
-            name,
-            description,
-            websiteUrl
+            $set:
+                {
+                    name,
+                    description,
+                    websiteUrl
+                }
         })
         return result.matchedCount === 1
     }

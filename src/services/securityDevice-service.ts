@@ -8,7 +8,7 @@ export class SecurityDeviceService {
     }
 
     async createDevice(userId: string, deviceId: string, ip: string, title: string,
-                       iat: string): Promise<SecurityDeviceTypeView | null>{
+                       iat: string): Promise<SecurityDeviceTypeView | null> {
 
         const newDevice = new SecurityDeviceType(
             userId,
@@ -16,25 +16,27 @@ export class SecurityDeviceService {
             title,
             new Date(iat).toISOString(),
             deviceId
-
         )
         return this.securityDeviceRepository.createDevice(newDevice)
+    }
+    async updateDevice(userId: string, title: string, lastActiveDate: string, deviceId: string) {
+        return this.securityDeviceRepository.updateDevice(userId, title, lastActiveDate, deviceId)
     }
 
     async getDeviceId(deviceId: string): Promise<SecurityDeviceTypeView | null> {
         return this.securityDeviceRepository.getDeviceId(deviceId)
     }
 
-    async deleteSessionsId(deviceId: string){
+    async deleteSessionsId(deviceId: string) {
         return this.securityDeviceRepository.deleteSessionsId(deviceId)
     }
 
-    async deleteAllOtherSessions(userId: string, deviceId: string){
+    async deleteAllOtherSessions(userId: string, deviceId: string) {
         return this.securityDeviceRepository.deleteAllOtherSessions(userId, deviceId)
     }
 
 
-    async deleteDeviceAll(){
+    async deleteDeviceAll() {
         return this.securityDeviceRepository.deleteDeviceAll()
     }
 }

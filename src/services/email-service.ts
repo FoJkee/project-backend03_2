@@ -8,7 +8,7 @@ const PASS = process.env.PASS
 
 export class EmailService {
 
-    async sendEmail(email: string, code: string) {
+    async sendEmail(email: string, subject: string, message: string) {
 
         const transporter = await nodemailer.createTransport({
             service: 'gmail',
@@ -21,12 +21,8 @@ export class EmailService {
         const info = await transporter.sendMail({
             from: EMAIL, // sender address
             to: email, // list of receivers
-            subject: "Registration ✔", // Subject line
-            text: "Registration", // plain text body
-            html: ' <h1>Thank for your registration</h1>\n' +
-                ' <p>To finish registration please follow the link below:\n' +
-                ` <a href='https://somesite.com/confirm-email?code=${code}'>complete registration</a>\n` +
-                ' </p>\n', // html body
+            subject: subject, // Subject line
+            html: message // html body
         })
 
         return info

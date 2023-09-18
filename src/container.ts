@@ -19,6 +19,8 @@ import {SecurityDeviceService} from "./services/securityDevice-service";
 import {SecurityDeviceRepository} from "./repository/securityDevice-repository";
 import {SecurityDeviceController} from "./controllers/securityDevice-controller";
 import {EmailService} from "./services/email-service";
+import {RateLimitDeviceRepository} from "./repository/rateLimitDevice-repository";
+import {RateLimitDeviceService} from "./services/rateLimitDevice-service";
 
 
 const userRepository = new UserRepository()
@@ -46,6 +48,9 @@ const securityDeviceRepository = new SecurityDeviceRepository()
 export const securityDeviceService = new SecurityDeviceService(securityDeviceRepository)
 
 const emailService = new EmailService()
+
+const rateLimitDeviceRepository = new RateLimitDeviceRepository()
+export const rateLimitDeviceService = new RateLimitDeviceService(rateLimitDeviceRepository)
 
 
 // controllers

@@ -30,8 +30,8 @@ export class JwtService {
         }
     }
 
-    async getLastActiveDateFromToken(token: string): Promise<string>{
-        const result: any = await jwt.decode(token)
+    async getLastActiveDateFromToken(token: string){
+        const result: any = jwt.decode(token)
         return new Date(result!.iat * 1000).toISOString()
     }
 

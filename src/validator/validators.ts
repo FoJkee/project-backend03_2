@@ -1,4 +1,5 @@
 import {body} from "express-validator";
+import exp from "constants";
 
 
 
@@ -99,4 +100,21 @@ export const LoginOrEmailValidator = body('loginOrEmail')
     .notEmpty()
     .isString()
     .withMessage('loginOrEmail is required')
+
+export const NewPasswordValidator = body('newPassword')
+    .trim()
+    .notEmpty()
+    .withMessage('password is required')
+    .isLength({min:6, max:20})
+    .withMessage('newPassword should 6 - 20 symbols')
+
+export const RecoveryCodeValidator = body('recoveryCode')
+    .trim()
+    .notEmpty()
+    .withMessage('recoveryCode is required')
+
+export const CodeValidator = body('code')
+    .trim()
+    .notEmpty()
+    .withMessage('code is required')
 
