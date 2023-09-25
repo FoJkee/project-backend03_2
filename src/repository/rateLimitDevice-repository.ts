@@ -6,17 +6,19 @@ import dateFns from "date-fns/addMinutes";
 
 export class RateLimitDeviceRepository {
 
-    async rateLimitCreate(limitDevice: RateLimit){
+    async rateLimitCreate(limitDevice: RateLimit) {
         return RateModel.create(limitDevice)
-
     }
 
-    async rateLimitFind(ip: string, url: string): Promise<RateLimitView[]>{
-        return RateModel.find({
+    async rateLimitFind(ip: string, url: string) {
+
+        const filter = await RateModel.find({
             ip,
             url,
             date: {$gte: dateFns(new Date(), -10)}
         })
+
+        return RateModel.countDocuments(filter)
     }
 
 }

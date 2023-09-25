@@ -1,4 +1,4 @@
-import {UserType, UserTypeView} from "../types/user-type";
+import {UserTypeView} from "../types/user-type";
 import jwt from 'jsonwebtoken'
 import dotenv from "dotenv";
 import {TokenPayload} from "../types/jwt-type";
@@ -6,7 +6,7 @@ import {TokenPayload} from "../types/jwt-type";
 dotenv.config()
 
 
-const jwtSecret = process.env.JWT_SECRET || ''
+const jwtSecret = process.env.JWT_SECRET || '123'
 
 
 export class JwtService {

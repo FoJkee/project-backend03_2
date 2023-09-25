@@ -17,7 +17,8 @@ export class SecurityDeviceRepository {
     }
 
     async deleteSessionsId(deviceId: string) {
-        return DeviceModel.deleteOne({deviceId})
+        const result = await DeviceModel.deleteOne({deviceId})
+        return result.deletedCount === 1
     }
 
     async deleteAllOtherSessions(userId: string, deviceId: string) {

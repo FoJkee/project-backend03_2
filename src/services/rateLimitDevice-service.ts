@@ -2,7 +2,6 @@ import {RateLimit, RateLimitView} from "../types/securityDevice-type";
 import {RateLimitDeviceRepository} from "../repository/rateLimitDevice-repository";
 
 
-
 export class RateLimitDeviceService {
     constructor(private rateLimitDeviceRepository: RateLimitDeviceRepository) {
     }
@@ -17,7 +16,7 @@ export class RateLimitDeviceService {
         return this.rateLimitDeviceRepository.rateLimitCreate(limitDevice)
     }
 
-    async rateLimitFind(ip: string, url: string): Promise<RateLimitView[]>{
+    async rateLimitFind(ip: string, url: string) {
         return this.rateLimitDeviceRepository.rateLimitFind(ip, url)
     }
 

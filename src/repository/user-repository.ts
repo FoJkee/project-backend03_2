@@ -63,7 +63,7 @@ export class UserRepository {
         )
     }
 
-    async findUserAndUpdateByConfirmationCode(code: string): Promise<UserTypeView | null> {
+    async findUserAndUpdateByConfirmationCode(code: string) {
         return UserModel.findOneAndUpdate({'emailConfirmation.codeConfirmation': code},
             {$set: {'emailConfirmation.isConfirmed': true}})
     }

@@ -6,12 +6,12 @@ export const rateLimitDeviceMiddleware = async (req: Request, res: Response, nex
 
     const url = req.originalUrl
     const ip = req.ip
+
     await rateLimitDeviceService.rateLimitCreate(ip, url)
+
     const rateLimitDevice = await rateLimitDeviceService.rateLimitFind(ip, url)
-    if (rateLimitDevice.length > 5) {
-        res.sendStatus(429)
-    } else {
-        next()
-    }
+
+    if (rateLimitDevice > 5) return res.sendStatus(429)
+    return next()
 
 }
