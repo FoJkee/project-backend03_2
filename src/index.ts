@@ -36,7 +36,6 @@ app.use('/devices', securityDeviceRouter)
 
 app.get('/', (req: Request, res: Response) => {
     res.send('hello')
-
 })
 
 
