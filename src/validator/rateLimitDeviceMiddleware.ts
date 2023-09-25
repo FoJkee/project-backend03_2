@@ -1,17 +1,25 @@
 import {NextFunction, Request, Response} from "express";
-import {rateLimitDeviceService} from "../container";
+import {RateLimitDeviceService} from "../services/rateLimitDevice-service";
 
 
-export const rateLimitDeviceMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 
-    const url = req.originalUrl
-    const ip = req.ip
+export class RateLimitMiddleware {
+    constructor(private rateLimitDeviceService: RateLimitDeviceService) {
 
-    await rateLimitDeviceService.rateLimitCreate(ip, url)
+    }
+    async rateLimitDeviceMiddleware (req: Request, res: Response, next: NextFunction)  {
 
-    const rateLimitDevice = await rateLimitDeviceService.rateLimitFind(ip, url)
+        const url = req.originalUrl
+        const ip = req.ip
 
-    if (rateLimitDevice > 5) return res.sendStatus(429)
-    return next()
+        await this.rateLimitDeviceService.rateLimitCreate(ip, url)
+
+        const rateLimitDevice = await this.rateLimitDeviceService.rateLimitFind(ip, url)
+
+        if (rateLimitDevice > 5) return res.sendStatus(429)
+        return next()
+
+    }
 
 }
+
