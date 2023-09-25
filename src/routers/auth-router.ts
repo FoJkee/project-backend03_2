@@ -42,12 +42,12 @@ authRouter.post('/registration-email-resending',
     authController.registrationEmailResending.bind(authController))
 
 authRouter.post('/password-recovery',
-    // rateLimitDeviceMiddleware,
+    rateLimitDeviceMiddleware,
     UserEmailValidator, errorsMiddleware,
     authController.passwordRecovery.bind(authController))
 
 authRouter.post('/new-password',
-    // rateLimitDeviceMiddleware,
+    rateLimitDeviceMiddleware,
     NewPasswordValidator, RecoveryCodeValidator,
     errorsMiddleware, authController.newPassword.bind(authController))
 
