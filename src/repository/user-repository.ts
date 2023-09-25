@@ -97,11 +97,16 @@ export class UserRepository {
 
 
     async createUser(user: UserType): Promise<UserTypeView | null> {
-        return UserModel.create(user)
+         await UserModel.create(user)
+        return this._getUserId(user.id)
     }
 
     async getUserId(userId: string): Promise<UserTypeView | null> {
         return UserModel.findOne({userId})
+    }
+
+    async _getUserId(id: string): Promise<UserTypeView | null> {
+        return UserModel.findOne({id}, {_id: 0, __v: 0, passwordHash: 0, emailConformation: 0})
     }
 
 

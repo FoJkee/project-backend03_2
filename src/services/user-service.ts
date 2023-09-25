@@ -3,7 +3,6 @@ import {UserType, UserTypeView} from "../types/user-type";
 import {randomUUID} from "crypto";
 import bcrypt from 'bcrypt'
 import dateFns from 'date-fns/addMinutes'
-import {UserModel} from "../models/user-model";
 
 export class UserService {
 
@@ -70,14 +69,14 @@ export class UserService {
         return this.userRepository.updateUserByConfirmationCode(id)
     }
 
-    async updateUserPassword(newPassword: string, id: string) {
-        const user = await this.getUserId(id)
+    async updateUserPassword(newPassword: string, userId: string) {
+        const user = await this.getUserId(userId)
         if (!user) return null
 
         const salt = await bcrypt.genSalt(10)
         const passwordHash = await bcrypt.hash(newPassword, salt)
 
-        return this.userRepository.updateUserPassword(passwordHash, id)
+        return this.userRepository.updateUserPassword(passwordHash, userId)
     }
 
 

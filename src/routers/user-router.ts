@@ -10,7 +10,6 @@ export const userRouter = Router({})
 userRouter.get('/', authBasicMiddleware, userController.getUser.bind(userController))
 
 userRouter.post('/', authBasicMiddleware, UserLoginValidator, UserPasswordValidator, UserEmailValidator,
-    errorsMiddleware,
-    userController.createUser.bind(userController))
+    errorsMiddleware, userController.createUser.bind(userController))
 
 userRouter.delete('/:id', authBasicMiddleware, userController.deleteUserId.bind(userController))
