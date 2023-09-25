@@ -57,7 +57,7 @@ export class UserService {
 
     }
 
-    async findUserByConfirmationCode(code: string) {
+    async findUserByConfirmationCode(code: string): Promise<UserTypeView | null> {
         return this.userRepository.findUserByConfirmationCode(code)
     }
 
@@ -69,14 +69,14 @@ export class UserService {
         return this.userRepository.updateUserByConfirmationCode(id)
     }
 
-    async updateUserPassword(newPassword: string, userId: string) {
-        const user = await this.getUserId(userId)
+    async updateUserPassword(newPassword: string, id: string): Promise<UserTypeView | null> {
+        const user = await this.userRepository._getUserId(id)
         if (!user) return null
 
         const salt = await bcrypt.genSalt(10)
         const passwordHash = await bcrypt.hash(newPassword, salt)
 
-        return this.userRepository.updateUserPassword(passwordHash, userId)
+        return this.userRepository.updateUserPassword(passwordHash, id)
     }
 
 

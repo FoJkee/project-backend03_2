@@ -1,8 +1,6 @@
-import {NextFunction, Request, Response} from "express";
 import {UserService} from "../services/user-service";
 import {body} from "express-validator";
 import {BlogService} from "../services/blog-service";
-import {tr} from "date-fns/locale";
 
 
 export class CustomValidator {
@@ -27,4 +25,6 @@ export class CustomValidator {
         if (emailData) throw new Error('email exists')
         return true
     })
+
+
 }

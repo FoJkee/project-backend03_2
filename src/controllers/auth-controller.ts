@@ -94,27 +94,37 @@ export class AuthController {
         const {email} = req.body
 
         const user = await this.userService.findUserByEmailOrLogin(email)
-        if (!user) return res.sendStatus(204)
+        if(!user) return res.status(400).json({errorsMessages: [{
+                message: 'code is required',
+                field: 'code',
+            }]})
 
         const updateUser = await this.userService.updateUserByConfirmationCode(user.id)
         await this.emailService.sendEmail(email,
             "Email resending confirmation",
             `<h1>Password recovery confirmation</h1>
             <p>To finish password recovery please follow the link below:
-             <a href='https://somesite.com/confirm-email?code=${
+             <a href='https://somesite.com/password-recovery?recoveryCode=${
                 updateUser!.emailConformation.codeConfirmation}'>recovery password</a>
             </p>`)
 
-        return res.sendStatus(204)
+        return updateUser ? res.sendStatus(204) : res.sendStatus(400)
     }
 
     async newPassword(req: Request, res: Response) {
 
         const {newPassword, recoveryCode} = req.body
-        const user = await this.userService.findUserByConfirmationCode(recoveryCode)
-        const updateUser = await this.userService.updateUserPassword(newPassword, user!.id)
 
-        return updateUser ? res.sendStatus(204) : res.sendStatus(400)
+        const user = await this.userService.findUserByConfirmationCode(recoveryCode)
+        if(!user) return res.status(400).json({errorsMessages: [{
+                        message: 'recoveryCode is required',
+                        field: 'recoveryCode',
+                    }]})
+
+        const updateUser = await this.userService.updateUserPassword(newPassword, user!.id)
+        if (updateUser) return res.sendStatus(204)
+
+        return res.sendStatus(204)
     }
 
 

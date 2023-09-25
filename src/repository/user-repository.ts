@@ -45,21 +45,27 @@ export class UserRepository {
         return UserModel.countDocuments(filter)
     }
 
-    async findUserByConfirmationCode(code: string) {
-        return UserModel.findOne({"emailConfirmation.isConfirmed": code})
+    async findUserByConfirmationCode(code: string): Promise<UserTypeView | null> {
+        return UserModel.findOne({
+            $and: [
+                {"emailConfirmation.isConfirmed": code},
+                {"emailConfirmation.expirationDate": {$gte: new Date}}
+            ]
+        })
     }
 
-    async updateUserPassword(passwordHash: string, id: string) {
-        return UserModel.findOneAndUpdate({id}, {
+    async updateUserPassword(passwordHash: string, id: string): Promise<UserTypeView | null> {
+        await UserModel.findOneAndUpdate({id}, {
                 $set:
                     {
                         passwordHash,
                         "emailConfirmation.codeConfirmation": randomUUID(),
                         "emailConfirmation.expirationDate": dateFns(new Date(), 10),
-                        "emailConfirmation.isConfirmed": false
+                        "emailConfirmation.isConfirmed": true
                     }
             }
         )
+        return UserModel.findOne({id})
     }
 
     async findUserAndUpdateByConfirmationCode(code: string) {
@@ -96,7 +102,7 @@ export class UserRepository {
 
 
     async createUser(user: UserType): Promise<UserTypeView | null> {
-         await UserModel.create(user)
+        await UserModel.create(user)
         return this._getUserId(user.id)
     }
 
