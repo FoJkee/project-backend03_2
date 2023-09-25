@@ -21,16 +21,6 @@ export class AuthController {
 
         const {login, email, password} = req.body
 
-        // const findLogin = await this.userService.findUserByLogin(login)
-        // if (findLogin) {
-        //     return res.status(400).json(this.errMes('login'))
-        // }
-        // const findEmail = await this.userService.findUserByEmail(email)
-        //
-        // if (findEmail) {
-        //     return res.status(400).json(this.errMes('email'))
-        // }
-
         const createUser = await this.userService.createUser(login, email, password)
 
         if (createUser) {
@@ -73,7 +63,6 @@ export class AuthController {
         }
     }
 
-// не происходит удаление
     async logout(req: Request, res: Response) {
 
         const refreshToken = req.cookies.refreshToken
@@ -105,7 +94,8 @@ export class AuthController {
         const {email} = req.body
 
         const user = await this.userService.findUserByEmailOrLogin(email)
-        if (!user) return res.sendStatus(400)
+        if (!user) return res.sendStatus(204)
+
         const updateUser = await this.userService.updateUserByConfirmationCode(user.id)
         await this.emailService.sendEmail(email,
             "Email resending confirmation",
@@ -115,7 +105,7 @@ export class AuthController {
                 updateUser!.emailConformation.codeConfirmation}'>recovery password</a>
             </p>`)
 
-        return updateUser ? res.sendStatus(204) : res.sendStatus(400)
+        return res.sendStatus(204)
     }
 
     async newPassword(req: Request, res: Response) {
@@ -126,6 +116,7 @@ export class AuthController {
 
         return updateUser ? res.sendStatus(204) : res.sendStatus(400)
     }
+
 
 // обновляем через юзера или через девайс?
     async refreshToken(req: Request, res: Response) {

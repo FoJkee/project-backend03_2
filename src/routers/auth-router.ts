@@ -38,7 +38,6 @@ authRouter.post('/registration-confirmation',
 authRouter.post('/registration-email-resending',
     // rateLimitDeviceMiddleware,
     UserEmailValidator,
-    // customValidator.customEmailValidator.bind(customValidator),
     errorsMiddleware,
     authController.registrationEmailResending.bind(authController))
 

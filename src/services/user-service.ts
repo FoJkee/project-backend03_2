@@ -65,7 +65,7 @@ export class UserService {
         return this.userRepository.findUserAndUpdateByConfirmationCode(code)
     }
 
-    async updateUserByConfirmationCode(id: string) {
+    async updateUserByConfirmationCode(id: string): Promise<UserTypeView | null> {
         return this.userRepository.updateUserByConfirmationCode(id)
     }
 

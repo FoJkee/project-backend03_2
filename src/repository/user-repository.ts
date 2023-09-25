@@ -49,7 +49,6 @@ export class UserRepository {
         return UserModel.findOne({"emailConfirmation.isConfirmed": code})
     }
 
-
     async updateUserPassword(passwordHash: string, id: string) {
         return UserModel.findOneAndUpdate({id}, {
                 $set:
@@ -68,7 +67,7 @@ export class UserRepository {
             {$set: {'emailConfirmation.isConfirmed': true}})
     }
 
-    async updateUserByConfirmationCode(id: string) {
+    async updateUserByConfirmationCode(id: string): Promise<UserTypeView | null> {
         return UserModel.findOneAndUpdate({id},
             {
                 $set:
