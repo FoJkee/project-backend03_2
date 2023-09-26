@@ -2,23 +2,26 @@ import {NextFunction, Request, Response} from "express";
 import {RateLimitDeviceService} from "../services/rateLimitDevice-service";
 
 
-
 export class RateLimitMiddleware {
     constructor(private rateLimitDeviceService: RateLimitDeviceService) {
 
     }
-    async rateLimitDeviceMiddleware (req: Request, res: Response, next: NextFunction)  {
 
-        const url = req.originalUrl
+    async rateLimitDeviceMiddleware(req: Request, res: Response, next: NextFunction) {
+
+        const url = req.originalUrl || req.baseUrl
         const ip = req.ip
+        const date = new Date()
 
-        await this.rateLimitDeviceService.rateLimitCreate(ip, url)
+        await this.rateLimitDeviceService.rateLimitCreate({ip, url, date})
 
         const rateLimitDevice = await this.rateLimitDeviceService.rateLimitFind(ip, url)
 
-        if (rateLimitDevice > 5) return res.sendStatus(429)
-        return next()
-
+        if (rateLimitDevice > 5) {
+            res.sendStatus(429)
+            return
+        }
+        next()
     }
 
 }

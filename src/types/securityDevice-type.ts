@@ -21,7 +21,7 @@ export type SecurityDeviceTypeView = {
 
 export class RateLimit  {
     constructor(
-        public ip: string,
+        public ip: string | string[],
         public url: string,
         public date: Date
     ) {
@@ -29,7 +29,7 @@ export class RateLimit  {
 }
 
 export type RateLimitView =  {
-     ip: string,
+     ip: string | string[],
      url: string,
      date: Date
 

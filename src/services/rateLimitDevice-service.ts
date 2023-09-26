@@ -6,17 +6,12 @@ export class RateLimitDeviceService {
     constructor(private rateLimitDeviceRepository: RateLimitDeviceRepository) {
     }
 
-    async rateLimitCreate(ip: string, url: string) {
-        const limitDevice = new RateLimit(
-            ip,
-            url,
-            new Date()
-        )
+    async rateLimitCreate(limitDevice: RateLimit) {
 
         return this.rateLimitDeviceRepository.rateLimitCreate(limitDevice)
     }
 
-    async rateLimitFind(ip: string, url: string) {
+    async rateLimitFind(ip: string, url: string): Promise<number> {
         return this.rateLimitDeviceRepository.rateLimitFind(ip, url)
     }
 
