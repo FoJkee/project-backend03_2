@@ -1,28 +1,22 @@
 import {NextFunction, Request, Response} from "express";
-import {RateLimitDeviceService} from "../services/rateLimitDevice-service";
+import {RateModel} from "../models/rateLimitDevice-model";
+import {addSeconds} from "date-fns";
 
 
-export class RateLimitMiddleware {
-    constructor(private rateLimitDeviceService: RateLimitDeviceService) {
+   export const rateLimitDeviceMiddleware =  async (req: Request, res: Response, next: NextFunction) => {
 
-    }
-
-    async rateLimitDeviceMiddleware(req: Request, res: Response, next: NextFunction) {
-
-        const url = req.originalUrl || req.baseUrl + req.url
+        const url = req.originalUrl
         const ip = req.ip
         const date = new Date()
 
-        await this.rateLimitDeviceService.rateLimitCreate({ip, url, date})
+        const connectionsCount = await RateModel.countDocuments({url, ip, date:
+                {$gte: addSeconds(date, -10)}})
 
-        const rateLimitDevice = await this.rateLimitDeviceService.rateLimitFind(ip, url)
+        if(connectionsCount + 1 > 5) return res.sendStatus(429)
+        await RateModel.create({ip, url , date})
 
-        if (rateLimitDevice > 5) {
-            res.sendStatus(429)
-            return
-        }
-        next()
+        return next()
     }
 
-}
+
 

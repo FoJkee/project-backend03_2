@@ -69,7 +69,7 @@ export class UserService {
         return this.userRepository.updateUserByConfirmationCode(id)
     }
 
-    async updateUserPassword(newPassword: string, id: string): Promise<UserTypeView | null> {
+    async updateUserPassword(newPassword: string, id: string): Promise<void | null> {
         const user = await this.userRepository._getUserId(id)
         if (!user) return null
 

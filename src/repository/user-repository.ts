@@ -47,27 +47,34 @@ export class UserRepository {
 
     async findUserByConfirmationCode(code: string): Promise<UserTypeView | null> {
         return UserModel.findOne({
+
+            //$and: [
+            //  {
+            "emailConfirmation.codeConfirmation": code
+            // },
+            //{"emailConfirmation.expirationDate": {$gte: new Date()}}
+            //]
+        })
+    }
+
+    async findUserByRecoveryCode(code: string): Promise<UserTypeView | null> {
+        return UserModel.findOne({
+
             $and: [
-                {"emailConfirmation.codeConfirmation": code},
+                {"emailConfirmation.recoveryCode": code},
                 {"emailConfirmation.expirationDate": {$gte: new Date()}}
             ]
         })
     }
 
-    async updateUserPassword(passwordHash: string, id: string): Promise<UserTypeView | null> {
+    async updateUserPassword(passwordHash: string, id: string): Promise<void> {
         await UserModel.findOneAndUpdate({id}, {
                 $set:
-                    {
-                        passwordHash,
-                        "emailConfirmation.codeConfirmation": randomUUID(),
-                        "emailConfirmation.expirationDate": dateFns(new Date(), 10),
-                        "emailConfirmation.isConfirmed": true
-                    }
+                    {passwordHash}
             }
         )
-        return UserModel.findOne({id})
+        return;
     }
-
     async findUserAndUpdateByConfirmationCode(code: string) {
         return UserModel.findOneAndUpdate({'emailConfirmation.codeConfirmation': code},
             {$set: {'emailConfirmation.isConfirmed': true}})
@@ -79,10 +86,12 @@ export class UserRepository {
                 $set:
                     {
                         "emailConfirmation.codeConfirmation": randomUUID(),
-                        "emailConfirmation.expirationDate": dateFns(new Date(), 10),
+                        "emailConfirmation.expirationDate": dateFns(new Date(), 1000),
                         "emailConfirmation.isConfirmed": false
                     }
-            })
+            },
+            {returnDocument: 'after'})
+
     }
 
     async findUserByLogin(login: string) {
@@ -111,7 +120,7 @@ export class UserRepository {
     }
 
     async _getUserId(id: string): Promise<UserTypeView | null> {
-        return UserModel.findOne({id}, {_id: 0, __v: 0, passwordHash: 0, emailConformation: 0})
+        return UserModel.findOne({id}, {_id: 0, __v: 0, passwordHash: 0, emailConfirmation: 0})
     }
 
 

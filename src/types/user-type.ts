@@ -8,7 +8,7 @@ export class UserType {
         public email: string,
         public createdAt: string = new Date().toISOString(),
         public passwordHash: string,
-        public emailConformation: {
+        public emailConfirmation: {
             codeConfirmation: string,
             expirationDate: Date,
             isConfirmed: boolean
@@ -22,7 +22,7 @@ export type UserTypeView = {
     email: string,
     createdAt: string
     passwordHash: string,
-    emailConformation: {
+    emailConfirmation: {
         codeConfirmation: string,
         expirationDate: Date,
         isConfirmed: boolean

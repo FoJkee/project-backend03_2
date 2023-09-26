@@ -26,5 +26,13 @@ export class CustomValidator {
         return true
     })
 
+    customCodeValidator = body('code').custom(async (code) => {
+        const codeData = await this.userService.findUserByConfirmationCode(code)
+        if(codeData) throw new Error('email is already confirmed')
+        return true
+    })
+
+
+
 
 }

@@ -29,7 +29,7 @@ export class AuthController {
                 `<h1>Registation</h1>
             <p>To finish registration please follow the link below:
              <a href='https://somesite.com/confirm-email?code=${
-                    createUser!.emailConformation.codeConfirmation}'>complete registration</a>
+                    createUser!.emailConfirmation.codeConfirmation}'>complete registration</a>
             </p>`
             )
         }
@@ -94,42 +94,37 @@ export class AuthController {
         const {email} = req.body
 
         const user = await this.userService.findUserByEmailOrLogin(email)
-        if (!user) return res.sendStatus(404)
+
+        if (!user) return res.sendStatus(204)
 
         const updateUser = await this.userService.updateUserByConfirmationCode(user.id)
-        await this.emailService.sendEmail(email,
-            "Email resending confirmation",
-            `<h1>Password recovery confirmation</h1>
+
+        try {
+            this.emailService.sendEmail(email,
+                "Email resending confirmation",
+                `<h1>Password recovery confirmation</h1>
             <p>To finish password recovery please follow the link below:
              <a href='https://somesite.com/password-recovery?recoveryCode=${
-                updateUser!.emailConformation.codeConfirmation}'>recovery password</a>
+                    updateUser!.emailConfirmation.codeConfirmation}'>recovery password</a>
             </p>`)
-
-        return updateUser ? res.sendStatus(204) : res.status(400).json({
-            errorsMessages:
-                [{message: 'error at email', field: "email"}]
-        })
+        } catch (e) {
+            console.log('send email error:', e)
+        }
+        return res.sendStatus(204)
     }
-
 
     async newPassword(req: Request, res: Response) {
 
         const {newPassword, recoveryCode} = req.body
 
         const user = await this.userService.findUserByConfirmationCode(recoveryCode)
+        if (!user) return res.status(400).json({
+            errorsMessages: [{message: 'error recoveryCode', field: "recoveryCode"}]
+        })
 
-        if (!user) {
-            res.status(400).json({
-                errorsMessages: [{
-                    message: 'recoveryCode is required',
-                    field: 'recoveryCode',
-                }]
-            })
-            return
-        }
+        await this.userService.updateUserPassword(newPassword, user.id)
+        return res.sendStatus(204)
 
-        const updateUser = await this.userService.updateUserPassword(newPassword, user!.id)
-        if (updateUser) res.sendStatus(204)
     }
 
 // обновляем через юзера или через девайс?
@@ -171,12 +166,13 @@ export class AuthController {
             `<h1>Email resending confirmation</h1>
             <p>To finish email resending please follow the link below:
              <a href='https://somesite.com/confirm-email?code=${
-                updateUser!.emailConformation.codeConfirmation}'>complete registration</a>
+                updateUser!.emailConfirmation.codeConfirmation}'>complete registration</a>
             </p>`
         )
 
         return updateUser ? res.sendStatus(204) : res.sendStatus(400)
 
     }
+
 
 }

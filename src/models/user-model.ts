@@ -8,7 +8,7 @@ const UserSchema = new mongoose.Schema<UserTypeView>({
     email: {type: String, required: true},
     createdAt: {type: String, required: true},
     passwordHash: {type: String, required: true},
-    emailConformation: {
+    emailConfirmation: {
         codeConfirmation: {type: String, required: true},
         expirationDate: {type: Date, default: null},
         isConfirmed: {type: Boolean, default: false}

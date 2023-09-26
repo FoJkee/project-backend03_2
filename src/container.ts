@@ -21,7 +21,6 @@ import {SecurityDeviceController} from "./controllers/securityDevice-controller"
 import {EmailService} from "./services/email-service";
 import {RateLimitDeviceRepository} from "./repository/rateLimitDevice-repository";
 import {RateLimitDeviceService} from "./services/rateLimitDevice-service";
-import {RateLimitMiddleware} from "./validator/rateLimitDeviceMiddleware";
 
 
 const userRepository = new UserRepository()
@@ -39,7 +38,6 @@ const postService = new PostService(postRepository, userRepository, blogReposito
 const commentsRepository = new CommentsRepository()
 const commentsService = new CommentsService(commentsRepository)
 
-
 export const userService = new UserService(userRepository)
 
 export const jwtService = new JwtService()
@@ -51,7 +49,7 @@ export const securityDeviceService = new SecurityDeviceService(securityDeviceRep
 const emailService = new EmailService()
 
 const rateLimitDeviceRepository = new RateLimitDeviceRepository()
-const rateLimitDeviceService = new RateLimitDeviceService(rateLimitDeviceRepository)
+// const rateLimitDeviceService = new RateLimitDeviceService(rateLimitDeviceRepository)
 
 
 // controllers
@@ -63,8 +61,7 @@ export const commentsController = new CommentsController(commentsService)
 export const authController = new AuthController(userService, authService, jwtService, securityDeviceService, emailService)
 export const customValidator = new CustomValidator(userService, blogService)
 export const securityDeviceController = new SecurityDeviceController(securityDeviceService, jwtService)
-
-export const rateLimitDeviceController = new RateLimitMiddleware(rateLimitDeviceService)
+// export const rateLimitDeviceController = new RateLimitMiddleware(rateLimitDeviceService)
 
 
 
