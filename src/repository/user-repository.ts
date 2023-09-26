@@ -49,7 +49,7 @@ export class UserRepository {
         return UserModel.findOne({
             $and: [
                 {"emailConfirmation.codeConfirmation": code},
-                {"emailConfirmation.expirationDate": {$gte: new Date}}
+                {"emailConfirmation.expirationDate": {$gte: new Date()}}
             ]
         })
     }
