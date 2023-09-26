@@ -9,7 +9,7 @@ export class RateLimitMiddleware {
 
     async rateLimitDeviceMiddleware(req: Request, res: Response, next: NextFunction) {
 
-        const url = req.originalUrl || req.baseUrl
+        const url = req.originalUrl || req.baseUrl + req.url
         const ip = req.ip
         const date = new Date()
 

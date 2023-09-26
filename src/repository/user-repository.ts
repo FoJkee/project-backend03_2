@@ -48,7 +48,7 @@ export class UserRepository {
     async findUserByConfirmationCode(code: string): Promise<UserTypeView | null> {
         return UserModel.findOne({
             $and: [
-                {"emailConfirmation.isConfirmed": code},
+                {"emailConfirmation.codeConfirmation": code},
                 {"emailConfirmation.expirationDate": {$gte: new Date}}
             ]
         })

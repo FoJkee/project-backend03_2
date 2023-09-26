@@ -94,7 +94,7 @@ export class AuthController {
         const {email} = req.body
 
         const user = await this.userService.findUserByEmailOrLogin(email)
-        if (!user) return res.sendStatus(204)
+        if (!user) return res.sendStatus(404)
 
         const updateUser = await this.userService.updateUserByConfirmationCode(user.id)
         await this.emailService.sendEmail(email,
@@ -105,20 +105,25 @@ export class AuthController {
                 updateUser!.emailConformation.codeConfirmation}'>recovery password</a>
             </p>`)
 
-        return updateUser ? res.sendStatus(204) : res.status(400).json({ errorsMessages:
-                [{ message: 'error at email', field: "email" }] })
+        return updateUser ? res.sendStatus(204) : res.status(400).json({
+            errorsMessages:
+                [{message: 'error at email', field: "email"}]
+        })
     }
 
     async newPassword(req: Request, res: Response) {
 
         const {newPassword, recoveryCode} = req.body
         const user = await this.userService.findUserByConfirmationCode(recoveryCode)
-        const updateUser = await this.userService.updateUserPassword(newPassword, user!.id)
-        return updateUser ?  res.sendStatus(204) : res.status(400).json({errorsMessages: [{
+        if (!user) return res.status(400).json({
+            errorsMessages: [{
                 message: 'recoveryCode is required',
                 field: 'recoveryCode',
             }]
         })
+
+        const updateUser = await this.userService.updateUserPassword(newPassword, user.id)
+        return res.sendStatus(204)
     }
 
 

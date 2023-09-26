@@ -8,6 +8,7 @@ export class RateLimitDeviceService {
 
     async rateLimitCreate(limitDevice: RateLimit) {
 
+
         return this.rateLimitDeviceRepository.rateLimitCreate(limitDevice)
     }
 
