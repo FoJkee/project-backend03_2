@@ -112,25 +112,24 @@ export class AuthController {
     }
 
 
-
     async newPassword(req: Request, res: Response) {
 
         const {newPassword, recoveryCode} = req.body
 
         const user = await this.userService.findUserByConfirmationCode(recoveryCode)
-        if (!user) {
-            res.status(400).json({
-                errorsMessages: [{
-                    message: 'recoveryCode is required',
-                    field: 'recoveryCode',
-                }]
-            })
-            return
-        }
+
+        // if (!user) {
+        //     res.status(400).json({
+        //         errorsMessages: [{
+        //             message: 'recoveryCode is required',
+        //             field: 'recoveryCode',
+        //         }]
+        //     })
+        //     return
+        // }
 
         const updateUser = await this.userService.updateUserPassword(newPassword, user!.id)
-        if (updateUser) return res.sendStatus(204)
-        return res.sendStatus(204)
+        if (updateUser) res.sendStatus(204)
     }
 
 
