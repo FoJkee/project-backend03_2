@@ -125,7 +125,6 @@ export class AuthController {
             })
             return
         }
-
         const updateUser = await this.userService.updateUserPassword(newPassword, user!.id)
         if (updateUser) return res.sendStatus(204)
         return res.sendStatus(204)
