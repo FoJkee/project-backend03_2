@@ -111,6 +111,8 @@ export class AuthController {
         })
     }
 
+
+
     async newPassword(req: Request, res: Response) {
 
         const {newPassword, recoveryCode} = req.body
