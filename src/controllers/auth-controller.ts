@@ -118,20 +118,19 @@ export class AuthController {
 
         const user = await this.userService.findUserByConfirmationCode(recoveryCode)
 
-        // if (!user) {
-        //     res.status(400).json({
-        //         errorsMessages: [{
-        //             message: 'recoveryCode is required',
-        //             field: 'recoveryCode',
-        //         }]
-        //     })
-        //     return
-        // }
+        if (!user) {
+            res.status(400).json({
+                errorsMessages: [{
+                    message: 'recoveryCode is required',
+                    field: 'recoveryCode',
+                }]
+            })
+            return
+        }
 
         const updateUser = await this.userService.updateUserPassword(newPassword, user!.id)
         if (updateUser) res.sendStatus(204)
     }
-
 
 // обновляем через юзера или через девайс?
     async refreshToken(req: Request, res: Response) {

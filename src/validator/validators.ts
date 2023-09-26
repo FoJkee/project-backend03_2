@@ -111,6 +111,7 @@ export const NewPasswordValidator = body('newPassword')
 export const RecoveryCodeValidator = body('recoveryCode')
     .trim()
     .notEmpty()
+    .isString()
     .withMessage('recoveryCode is required')
 
 export const CodeValidator = body('code')
