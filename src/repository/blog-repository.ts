@@ -13,7 +13,6 @@ export class BlogRepository {
             .sort({[sortBy]: sortDirection === 'asc' ? 'asc' : 'desc'})
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
-
     }
 
     async getBlogsCount(searchNameTerm: string): Promise<number> {
@@ -38,7 +37,6 @@ export class BlogRepository {
     async getPostForBlogCount(blogId: string): Promise<number> {
         return PostModel.countDocuments({blogId})
     }
-
 
     async getBlogId(id: string): Promise<BlogType | null> {
         return BlogModels.findOne({id})

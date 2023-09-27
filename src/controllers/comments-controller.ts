@@ -29,6 +29,18 @@ export class CommentsController {
 
     }
 
+    async updateCommentsIdLikeStatus(req: Request, res: Response){
+
+        const {commentsId} = req.params
+        const {likeStatus} = req.body
+        const userId = req.userId
+
+
+
+
+
+    }
+
     async deleteCommentsId(req: Request, res: Response) {
         const {id} = req.params
 

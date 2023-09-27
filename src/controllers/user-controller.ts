@@ -5,7 +5,7 @@ import {pagination} from "./paginations";
 
 export class UserController {
 
-    constructor(private userService: UserService) {
+    constructor(protected userService: UserService) {
     }
 
 

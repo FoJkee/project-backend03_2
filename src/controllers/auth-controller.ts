@@ -100,7 +100,7 @@ export class AuthController {
         const updateUser = await this.userService.updateUserByConfirmationCode(user.id)
 
         try {
-            this.emailService.sendEmail(email,
+           await this.emailService.sendEmail(email,
                 "Email resending confirmation",
                 `<h1>Password recovery confirmation</h1>
             <p>To finish password recovery please follow the link below:

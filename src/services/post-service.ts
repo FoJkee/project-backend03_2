@@ -1,9 +1,8 @@
 import {PostRepository} from "../repository/post-repository";
 import {PostType, PostTypeView} from "../types/post-type";
 import {randomUUID} from "crypto";
-import {CommentType, CommentTypeView} from "../types/comment-type";
+import {CommentType, CommentTypeView, LikeInfoEnum} from "../types/comment-type";
 import {UserRepository} from "../repository/user-repository";
-import {blogRepository} from "../container";
 import {BlogRepository} from "../repository/blog-repository";
 
 
@@ -13,7 +12,8 @@ export class PostService {
                 private blogRepository: BlogRepository) {
     }
 
-    async getCommentByPost(postId: string, pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<CommentTypeView[]> {
+    async getCommentByPost(postId: string, pageNumber: number, pageSize: number,
+                           sortBy: string, sortDirection: string): Promise<CommentType[]> {
         return this.postRepository.getCommentByPost(postId, pageNumber, pageSize, sortBy, sortDirection)
     }
 
@@ -21,7 +21,7 @@ export class PostService {
         return this.postRepository.getCommentByPostCount(postId)
     }
 
-    async createCommentByPost(userId: string, postId: string, content: string): Promise<CommentTypeView | null> {
+    async createCommentByPost(userId: string, postId: string, content: string): Promise<CommentType | null> {
 
         const user = await this.userRepository.getUserId(userId)
 
@@ -33,7 +33,12 @@ export class PostService {
                 userId: user!.id,
                 userLogin: user!.login
             },
-            new Date().toISOString()
+            new Date().toISOString(),
+            {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: LikeInfoEnum.None
+            }
         )
         return this.postRepository.createCommentByPost(createComment)
     }

@@ -10,18 +10,42 @@ export class CommentType {
             userId: string,
             userLogin: string,
         },
-        public createdAt: string = new Date().toISOString()
+        public createdAt: string = new Date().toISOString(),
+        public likesInfo: LikeInfoType
     ) {
     }
 }
 
+export enum LikeInfoEnum {
+    None = "None",
+    Like = "Like",
+    DisLike = 'DisLike'
+}
 
-export type CommentTypeView = {
-    id: string
-    content: string,
-    commentatorInfo: {
-        userId: string,
-        userLogin: string,
-    },
-    createdAt: string
+export type LikeInfoType = {
+    likesCount: number,
+    dislikesCount: number,
+    myStatus: LikeInfoEnum
+}
+
+
+export class CommentTypeView  {
+    constructor(
+        public id: string = randomUUID(),
+        public postId: string,
+        public content: string,
+        public commentatorInfo: {
+            userId: string,
+            userLogin: string,
+        },
+        public createdAt: string = new Date().toISOString(),
+
+        public likesInfo: {
+            likesCount: number,
+            dislikesCount: number,
+            myStatus: LikeInfoEnum
+        }
+    ) {
+    }
+
 }

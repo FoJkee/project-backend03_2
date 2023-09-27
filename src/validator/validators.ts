@@ -1,5 +1,6 @@
 import {body} from "express-validator";
 import exp from "constants";
+import {LikeInfoEnum} from "../types/comment-type";
 
 
 
@@ -117,4 +118,13 @@ export const CodeValidator = body('code')
     .trim()
     .notEmpty()
     .withMessage('code is required')
+
+
+export const LikeStatusValidator = body('likeStatus')
+    .trim()
+    .notEmpty()
+    .withMessage('likeStatus is required')
+    .isString()
+    .isIn(Object.values(LikeInfoEnum))
+    .withMessage('not correct')
 

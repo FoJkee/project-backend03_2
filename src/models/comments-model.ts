@@ -9,10 +9,15 @@ const CommentsSchema = new mongoose.Schema<CommentType>({
         userId: {type: String, required: true},
         userLogin: {type: String, required: true}
     },
-    createdAt: {type: String, required: true}
+    createdAt: {type: String, required: true},
+    likesInfo: {
+        likesCount: {type: Number, default: 0},
+        dislikesCount: {type: Number, default: 0},
+
+    }
 
 })
 
-export const CommentsModel = mongoose.model<CommentTypeView>('comments', CommentsSchema)
+export const CommentsModel = mongoose.model<CommentType>('comments', CommentsSchema)
 
 

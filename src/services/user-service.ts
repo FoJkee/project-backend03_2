@@ -79,7 +79,6 @@ export class UserService {
         return this.userRepository.updateUserPassword(passwordHash, id)
     }
 
-
     async deleteUserId(id: string): Promise<boolean> {
         return this.userRepository.deleteUserId(id)
     }

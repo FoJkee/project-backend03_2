@@ -10,6 +10,7 @@ export class UserRepository {
                   pageSize: number, searchLoginTerm: string | null, searchEmailTerm: string | null): Promise<UserTypeView[]> {
 
         const filter: any = {}
+
         if (searchLoginTerm) {
             filter.login = {$regex: searchLoginTerm, $options: 'i'}
         }
@@ -46,35 +47,14 @@ export class UserRepository {
     }
 
     async findUserByConfirmationCode(code: string): Promise<UserTypeView | null> {
-        return UserModel.findOne({
-
-            //$and: [
-            //  {
-            "emailConfirmation.codeConfirmation": code
-            // },
-            //{"emailConfirmation.expirationDate": {$gte: new Date()}}
-            //]
-        })
-    }
-
-    async findUserByRecoveryCode(code: string): Promise<UserTypeView | null> {
-        return UserModel.findOne({
-
-            $and: [
-                {"emailConfirmation.recoveryCode": code},
-                {"emailConfirmation.expirationDate": {$gte: new Date()}}
-            ]
-        })
+        return UserModel.findOne({"emailConfirmation.codeConfirmation": code})
     }
 
     async updateUserPassword(passwordHash: string, id: string): Promise<void> {
-        await UserModel.findOneAndUpdate({id}, {
-                $set:
-                    {passwordHash}
-            }
-        )
-        return;
+        await UserModel.findOneAndUpdate({id}, {$set: {passwordHash}})
+        return
     }
+
     async findUserAndUpdateByConfirmationCode(code: string) {
         return UserModel.findOneAndUpdate({'emailConfirmation.codeConfirmation': code},
             {$set: {'emailConfirmation.isConfirmed': true}})

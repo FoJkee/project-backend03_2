@@ -34,6 +34,7 @@ export class PostController {
     }
 
     async createCommentByPost(req: Request, res: Response) {
+
         const {postId} = req.params
         const {content} = req.body
         const user: any = req.userId
@@ -46,7 +47,6 @@ export class PostController {
         }
         const newComment = await this.postService.createCommentByPost(user, postId, content)
         res.status(201).json(newComment)
-
 
     }
 
