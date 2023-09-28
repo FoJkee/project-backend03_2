@@ -3,11 +3,16 @@ import {PostService} from "../services/post-service";
 
 import {pagination} from "./paginations";
 import {BlogService} from "../services/blog-service";
+import {jwtService} from "../container";
+import {JwtService} from "../services/jwt-service";
 
 
 export class PostController {
 
-    constructor(private postService: PostService, private blogService: BlogService) {
+    constructor(private postService: PostService,
+                private blogService: BlogService,
+                protected jwtService: JwtService
+    ) {
     }
 
     async getCommentByPost(req: Request, res: Response) {
@@ -34,10 +39,14 @@ export class PostController {
     }
 
     async createCommentByPost(req: Request, res: Response) {
+        let userId = null
+        const user = await this.jwtService.bearerUserIdFromHeaders(req.headers.authorization)
+        if(user){
+            userId = user.userId
+        }
 
         const {postId} = req.params
         const {content} = req.body
-        const user: any = req.userId
 
 
         const findPostId = await this.postService.getPostsId(postId)
@@ -45,7 +54,7 @@ export class PostController {
             res.sendStatus(404)
             return
         }
-        const newComment = await this.postService.createCommentByPost(user, postId, content)
+        const newComment = await this.postService.createCommentByPost(userId!, postId, content)
         res.status(201).json(newComment)
 
     }

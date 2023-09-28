@@ -13,10 +13,12 @@ import bodyParser from "body-parser";
 
 dotenv.config()
 
+
 const PORT = process.env.PORT || 4000
 const dbName = 'hw'
 const URL = process.env.DB_URL || `mongodb://127.0.0.1:27017/${dbName}`
 const app = express()
+
 
 app.use(express.json())
 app.use(cookieParser())

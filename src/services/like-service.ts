@@ -2,7 +2,6 @@ import {LikeType} from "../types/like-type";
 import {LikeInfoEnum} from "../types/comment-type";
 import {LikeRepository} from "../repository/like-repository";
 
-const likeRepository = new LikeRepository()
 export class LikeService {
 
     constructor(protected likeRepository: LikeRepository) {
@@ -19,6 +18,14 @@ export class LikeService {
 
         return this.likeRepository.createCommentStatus(status)
 
+    }
+
+    async getCommentStatus(userId: string, commentId: string){
+        return this.likeRepository.getCommentStatus(userId, commentId)
+    }
+
+    async deleteLikeServiceAll(){
+        return this.likeRepository.deleteLikeServiceAll()
     }
 
 

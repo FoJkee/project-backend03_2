@@ -2,6 +2,7 @@ import {UserTypeView} from "../types/user-type";
 import jwt from 'jsonwebtoken'
 import dotenv from "dotenv";
 import {TokenPayload} from "../types/jwt-type";
+import {UserService} from "./user-service";
 
 dotenv.config()
 
@@ -10,12 +11,15 @@ const jwtSecret = process.env.JWT_SECRET || '123'
 
 
 export class JwtService {
+    constructor(protected userService: UserService) {
+    }
+
     async createJwtAccessToken(user: UserTypeView): Promise<string> {
-        return jwt.sign({userId: user.id}, jwtSecret, {expiresIn: '1000s'})
+        return jwt.sign({userId: user.id}, jwtSecret, {expiresIn: '600000'})
     }
 
     async createJwtRefreshToken(user: UserTypeView, deviceId: string): Promise<string> {
-        return jwt.sign({userId: user.id, deviceId}, jwtSecret, {expiresIn: "2000s"})
+        return jwt.sign({userId: user.id, deviceId}, jwtSecret, {expiresIn: "20000"})
     }
 
     async verifyUserById(token: string): Promise<TokenPayload | null> {
@@ -30,9 +34,22 @@ export class JwtService {
         }
     }
 
-    async getLastActiveDateFromToken(token: string){
+    async getLastActiveDateFromToken(token: string) {
         const result: any = jwt.decode(token)
         return new Date(result!.iat * 1000).toISOString()
+    }
+
+
+    async bearerUserIdFromHeaders(authorization: string | undefined): Promise<{ userId: string, userLogin: string } | null> {
+        if (!authorization) return null
+        const token = authorization.split(' ')[1]
+        const data = await this.verifyUserById(token)
+        if (data && data.userId) {
+            const user = await this.userService.getUserId(data.userId)
+            if (!user) return null
+            return {userId: user.id, userLogin: user.login}
+        }
+        return null
     }
 
 }

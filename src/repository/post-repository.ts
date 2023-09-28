@@ -1,6 +1,6 @@
 import {PostModel} from "../models/post-model";
 import {PostType, PostTypeView} from "../types/post-type";
-import {CommentType, CommentTypeView, LikeInfoEnum} from "../types/comment-type";
+import {CommentType, LikeInfoEnum} from "../types/comment-type";
 import {CommentsModel} from "../models/comments-model";
 
 
@@ -11,7 +11,7 @@ export class PostRepository {
                            pageSize: number, sortBy: string, sortDirection: string): Promise<CommentType[]> {
 
         const filter = {postId}
-        return CommentsModel.find(filter, {_id: 0, __v: 0})
+        return CommentsModel.find(filter, {_id: 0, __v: 0, postId: 0})
             .sort({[sortBy]: sortDirection === 'asc' ? 'asc' : "desc"})
             .skip(pageSize * (pageNumber - 1))
             .limit(pageSize)
@@ -24,12 +24,14 @@ export class PostRepository {
     }
 
     async createCommentByPost(comment: CommentType): Promise<CommentType | null> {
-        return  CommentsModel.create(comment)
-
+        await  CommentsModel.create(comment)
+        const result = await this.getCommentsId(comment.id)
+        if(!result) return null
+        return {...result, likesInfo: {...result.likesInfo, myStatus: LikeInfoEnum.None}}
     }
 
-    async getCommentsId(id: string): Promise<CommentTypeView | null> {
-        return CommentsModel.findOne({id}, {_id: 0, __v: 0})
+    async getCommentsId(id: string): Promise<CommentType | null> {
+        return CommentsModel.findOne({id}, {_id: 0, __v: 0, postId: 0}).lean()
     }
 
     async getPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<PostTypeView[]> {

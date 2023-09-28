@@ -64,7 +64,7 @@ export const CommentContentValidator = body('content')
     .notEmpty()
     .withMessage('content is required')
     .isString()
-    .isLength({min: 1, max: 300})
+    .isLength({min: 20, max: 300})
     .withMessage('content should 1 - 300 symbols')
 
 

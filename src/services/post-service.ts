@@ -24,14 +24,15 @@ export class PostService {
     async createCommentByPost(userId: string, postId: string, content: string): Promise<CommentType | null> {
 
         const user = await this.userRepository.getUserId(userId)
+        if(!user) return null
 
         const createComment = new CommentType(
             randomUUID(),
             postId,
             content,
             {
-                userId: user!.id,
-                userLogin: user!.login
+                userId: user.id,
+                userLogin: user.login
             },
             new Date().toISOString(),
             {
@@ -40,6 +41,7 @@ export class PostService {
                 myStatus: LikeInfoEnum.None
             }
         )
+
         return this.postRepository.createCommentByPost(createComment)
     }
 
