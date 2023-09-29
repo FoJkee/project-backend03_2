@@ -1,7 +1,7 @@
 import {PostRepository} from "../repository/post-repository";
 import {PostType, PostTypeView} from "../types/post-type";
 import {randomUUID} from "crypto";
-import {CommentType, CommentTypeView, LikeInfoEnum} from "../types/comment-type";
+import {CommentType, CommentViewType, LikeInfoEnum} from "../types/comment-type";
 import {UserRepository} from "../repository/user-repository";
 import {BlogRepository} from "../repository/blog-repository";
 
@@ -21,7 +21,7 @@ export class PostService {
         return this.postRepository.getCommentByPostCount(postId)
     }
 
-    async createCommentByPost(userId: string, postId: string, content: string): Promise<CommentType | null> {
+    async createCommentByPost(userId: string, postId: string, content: string): Promise<CommentViewType | null> {
 
         const user = await this.userRepository.getUserId(userId)
         if(!user) return null
@@ -72,8 +72,8 @@ export class PostService {
 
     }
 
-    async getPostsId(id: string): Promise<PostTypeView | null> {
-        return this.postRepository.getPostsId(id)
+    async getPostsId(id: string, userId: string | null): Promise<PostTypeView | null> {
+        return this.postRepository.getPostsId(id, userId)
     }
 
     async updatedPostId(id: string, title: string, shortDescription: string,

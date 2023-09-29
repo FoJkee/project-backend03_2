@@ -10,6 +10,7 @@ import {commentsRouter} from "./routers/comments-router";
 import {authRouter} from "./routers/auth-router";
 import {securityDeviceRouter} from "./routers/securityDevice-router";
 import bodyParser from "body-parser";
+import {CommentsModel} from "./models/comments-model";
 
 dotenv.config()
 
@@ -24,7 +25,6 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(bodyParser.json())
 app.set('trust proxy', true)
-
 
 
 app.use('/blogs', blogRouter)

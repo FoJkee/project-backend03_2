@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import {CommentType, CommentTypeView} from "../types/comment-type";
+import {CommentType, LikeInfoEnum} from "../types/comment-type";
 
 const CommentsSchema = new mongoose.Schema<CommentType>({
     id: {type: String, required: true},
@@ -13,7 +13,7 @@ const CommentsSchema = new mongoose.Schema<CommentType>({
     likesInfo: {
         likesCount: {type: Number, default: 0},
         dislikesCount: {type: Number, default: 0},
-
+        myStatus: {type: String, default: LikeInfoEnum.None, enum: LikeInfoEnum}
     }
 
 })

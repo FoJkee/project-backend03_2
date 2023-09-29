@@ -1,10 +1,13 @@
 import {PostModel} from "../models/post-model";
 import {PostType, PostTypeView} from "../types/post-type";
-import {CommentType, LikeInfoEnum} from "../types/comment-type";
+import {CommentType, CommentViewType} from "../types/comment-type";
 import {CommentsModel} from "../models/comments-model";
+import {LikeRepository} from "./like-repository";
 
 
 export class PostRepository {
+    constructor(protected likeRepository: LikeRepository) {
+    }
 
 
     async getCommentByPost(postId: string, pageNumber: number,
@@ -15,7 +18,6 @@ export class PostRepository {
             .sort({[sortBy]: sortDirection === 'asc' ? 'asc' : "desc"})
             .skip(pageSize * (pageNumber - 1))
             .limit(pageSize)
-
     }
 
     async getCommentByPostCount(postId: string): Promise<number> {
@@ -23,15 +25,14 @@ export class PostRepository {
         return CommentsModel.countDocuments(filter)
     }
 
-    async createCommentByPost(comment: CommentType): Promise<CommentType | null> {
-        await  CommentsModel.create(comment)
-        const result = await this.getCommentsId(comment.id)
-        if(!result) return null
-        return {...result, likesInfo: {...result.likesInfo, myStatus: LikeInfoEnum.None}}
+    async createCommentByPost(comment: CommentType): Promise<CommentViewType | null> {
+        await CommentsModel.create(comment)
+        return comment.getViewModel()
+
     }
 
     async getCommentsId(id: string): Promise<CommentType | null> {
-        return CommentsModel.findOne({id}, {_id: 0, __v: 0, postId: 0}).lean()
+        return CommentsModel.findOne({id}, {_id: 0, __v: 0, postId: 0})
     }
 
     async getPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<PostTypeView[]> {
@@ -51,8 +52,18 @@ export class PostRepository {
         return PostModel.create(post)
     }
 
-    async getPostsId(id: string): Promise<PostTypeView | null> {
-        return PostModel.findOne({id}, {_id: 0, __v: 0})
+    async getPostsId(id: string, userId: string | null): Promise<PostTypeView | null> {
+        // let myStatus = LikeInfoEnum.None
+        // if(userId){
+        //     const postStatus = await this.likeRepository.getPostStatus(userId, id)
+        //     if(postStatus)  myStatus = postStatus.status
+        // }
+
+        return  PostModel.findOne({id}, {_id: 0, __v: 0}).lean()
+
+
+
+
     }
 
     async updatedPostId(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {

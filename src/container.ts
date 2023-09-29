@@ -32,7 +32,7 @@ const userRepository = new UserRepository()
 export const blogRepository = new BlogRepository()
 export const blogService = new BlogService(blogRepository)
 
-const postRepository = new PostRepository()
+const postRepository = new PostRepository(likeRepository)
 const postService = new PostService(postRepository, userRepository, blogRepository)
 
 

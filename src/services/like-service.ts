@@ -1,4 +1,4 @@
-import {LikeType} from "../types/like-type";
+import {CommentLikeType} from "../types/like-type";
 import {LikeInfoEnum} from "../types/comment-type";
 import {LikeRepository} from "../repository/like-repository";
 
@@ -7,9 +7,9 @@ export class LikeService {
     constructor(protected likeRepository: LikeRepository) {
     }
 
-    async createCommentStatus(userId: string, commentId: string): Promise<LikeType | null> {
+    async createCommentStatus(userId: string, commentId: string): Promise<CommentLikeType | null> {
 
-        const status = new LikeType(
+        const status = new CommentLikeType(
             userId,
             commentId,
             LikeInfoEnum.None,

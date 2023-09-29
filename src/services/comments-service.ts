@@ -1,6 +1,9 @@
 import {CommentType, LikeInfoEnum} from "../types/comment-type";
 import {CommentsRepository} from "../repository/comments-repository";
 import {LikeService} from "./like-service";
+import {CommentLikesModel} from "../models/like-model";
+import {CommentsModel} from "../models/comments-model";
+import {CommentLikeType} from "../types/like-type";
 
 
 export class CommentsService {
@@ -19,14 +22,27 @@ export class CommentsService {
         const comment = await this.getCommentsId(commentId)
         if (!comment) return false
 
-        const likeStatus = await this.likeService.getCommentStatus(userId, comment.id)
+        await CommentLikesModel.updateOne(
+            {userId, commentId},
+            {$set: {status, createdAt: new Date().toISOString()}},
+            {upsert: true}
+        )
+        const [likesCount, dislikesCount] = await Promise.all([
+            CommentLikesModel.countDocuments({commentId, status: LikeInfoEnum.Like}),
+            CommentLikesModel.countDocuments({commentId, status: LikeInfoEnum.DisLike})
+        ])
 
-        if(!likeStatus){
-            await this.likeService.createCommentStatus(userId, commentId)
-            return false
-        }
+        comment.likesInfo.likesCount = likesCount
+        comment.likesInfo.dislikesCount = dislikesCount
 
-        return this.commentsRepository.updateLikeStatus(comment, status, likeStatus)
+
+        await CommentsModel.updateOne({id: comment.id}, {$set: {...comment}})
+        return true
+
+    }
+
+    async getUserLikeStatus(id: string, userId: string): Promise<CommentLikeType | null> {
+        return this.commentsRepository.getUserLikeStatus(id, userId)
     }
 
     async deleteCommentsId(id: string): Promise<boolean> {

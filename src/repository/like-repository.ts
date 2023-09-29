@@ -1,18 +1,18 @@
-import {LikeType} from "../types/like-type";
-import {CommentLikesModel} from "../models/like-model";
+import {CommentLikeType, PostLikeType} from "../types/like-type";
+import {CommentLikesModel, PostLikeModel} from "../models/like-model";
 import {LikeInfoEnum} from "../types/comment-type";
 
 
 
 export class LikeRepository {
 
-    async createCommentStatus(status: LikeType): Promise<LikeType | null> {
+    async createCommentStatus(status: CommentLikeType): Promise<CommentLikeType | null> {
 
         await CommentLikesModel.create(status)
         return this.getCommentStatus(status.userId, status.commentId)
     }
 
-    async getCommentStatus(userId: string, commentId: string): Promise<LikeType | null>{
+    async getCommentStatus(userId: string, commentId: string): Promise<CommentLikeType | null>{
         return CommentLikesModel.findOne({userId, commentId})
     }
 
@@ -21,10 +21,16 @@ export class LikeRepository {
     }
 
     async updateCommentLikeStatus(userId: string, commentId: string,
-                                  status: LikeInfoEnum): Promise<LikeType | null>{
+                                  status: LikeInfoEnum): Promise<CommentLikeType | null>{
 
         return CommentLikesModel.findOneAndUpdate({userId, commentId}, {status})
     }
+
+    async getPostStatus(userId: string, postId: string): Promise<PostLikeType | null>{
+        return PostLikeModel.findOne({userId, postId}).lean()
+    }
+
+    async getNewestLike(postId: string, num: number){}
 
 
 

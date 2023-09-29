@@ -96,7 +96,7 @@ export class UserRepository {
     }
 
     async getUserId(userId: string): Promise<UserTypeView | null> {
-        return UserModel.findOne({userId})
+        return UserModel.findOne({id: userId})
     }
 
     async _getUserId(id: string): Promise<UserTypeView | null> {

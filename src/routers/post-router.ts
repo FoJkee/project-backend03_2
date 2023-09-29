@@ -16,7 +16,9 @@ export const postRouter = Router({})
 
 postRouter.get('/:postId/comments', postController.getCommentByPost.bind(postController))
 
-postRouter.post('/:postId/comments',authBearerMiddleware, CommentContentValidator, errorsMiddleware,
+postRouter.post('/:postId/comments',
+    authBearerMiddleware,
+    CommentContentValidator, errorsMiddleware,
     postController.createCommentByPost.bind(postController))
 
 postRouter.get('/', postController.getPosts.bind(postController))

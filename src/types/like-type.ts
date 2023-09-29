@@ -1,6 +1,6 @@
 import {LikeInfoEnum} from "./comment-type";
 
-export class LikeType {
+export class CommentLikeType {
     constructor(
         public userId: string,
         public commentId: string,
@@ -8,4 +8,16 @@ export class LikeType {
         public createdAt: string
     ) {
     }
+}
+
+
+export class PostLikeType {
+    constructor(
+        public userId: string,
+        public login: string,
+        public status: LikeInfoEnum,
+        public createdAt: string
+    ) {
+    }
+
 }

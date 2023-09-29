@@ -5,6 +5,7 @@ import {pagination} from "./paginations";
 import {BlogService} from "../services/blog-service";
 import {jwtService} from "../container";
 import {JwtService} from "../services/jwt-service";
+import {bearerUserIdFromHeaders} from "./bearerUserIdFromHeaders";
 
 
 export class PostController {
@@ -17,9 +18,16 @@ export class PostController {
 
     async getCommentByPost(req: Request, res: Response) {
 
+
+        const userId = await bearerUserIdFromHeaders(req.headers.authorization)
+
+
         const {pageNumber, pageSize, sortBy, sortDirection} = pagination(req)
 
         const {postId} = req.params
+
+        const post = await this.postService.getPostsId(postId, userId)
+
 
         const getComment = await this.postService.getCommentByPost(
             postId, pageNumber, pageSize, sortBy, sortDirection)
@@ -35,27 +43,26 @@ export class PostController {
         }
         res.status(200).json(result)
 
-
     }
 
     async createCommentByPost(req: Request, res: Response) {
-        let userId = null
-        const user = await this.jwtService.bearerUserIdFromHeaders(req.headers.authorization)
-        if(user){
-            userId = user.userId
-        }
 
+        const userId = req.userId!.id
         const {postId} = req.params
         const {content} = req.body
 
 
-        const findPostId = await this.postService.getPostsId(postId)
+        const findPostId = await this.postService.getPostsId(postId, userId)
         if (!findPostId) {
             res.sendStatus(404)
             return
         }
-        const newComment = await this.postService.createCommentByPost(userId!, postId, content)
-        res.status(201).json(newComment)
+        const newComment = await this.postService.createCommentByPost(userId, postId, content)
+        if(newComment){
+            res.status(201).json(newComment)
+        } else {
+            res.sendStatus(400)
+        }
 
     }
 
@@ -107,7 +114,9 @@ export class PostController {
 
     async getPostsId(req: Request, res: Response) {
         const {id} = req.params
-        const postId = await this.postService.getPostsId(id)
+        const userId = req.userId
+
+        const postId = await this.postService.getPostsId(id, userId?.id!)
         if (postId) {
             res.status(200).json(postId)
         } else {

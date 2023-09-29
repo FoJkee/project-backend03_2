@@ -2,7 +2,7 @@ import {CommentsService} from "../services/comments-service";
 import {Request, Response} from "express";
 import {JwtService} from "../services/jwt-service";
 import {LikeService} from "../services/like-service";
-import {LikeInfoEnum} from "../types/comment-type";
+import {bearerUserIdFromHeaders} from "./bearerUserIdFromHeaders";
 
 
 export class CommentsController {
@@ -35,13 +35,13 @@ export class CommentsController {
 
     async updateCommentsIdLikeStatus(req: Request, res: Response) {
 
-        const {commentsId} = req.params
+        const {commentId} = req.params
         const {likeStatus} = req.body
-        const userId: any = req.userId
+        const userId = req.userId!.id
 
 
-        const comment = await this.commentsService.updateLikeStatus(commentsId, likeStatus, userId)
 
+        const comment = await this.commentsService.updateLikeStatus(commentId, likeStatus, userId)
         if (!comment) return res.sendStatus(404)
         return res.sendStatus(204)
 
@@ -72,24 +72,19 @@ export class CommentsController {
         const {id} = req.params
         const getComments = await this.commentsService.getCommentsId(id)
 
-        const token = req.headers.authorization?.split(' ')[1]
-        let data = null
+        if (!getComments) return res.sendStatus(404)
 
-        if (token) data = await this.jwtService.verifyUserById(token)
+        const userId = await bearerUserIdFromHeaders(req.headers.authorization)
+        if (userId) {
 
+            const isUserLiked = await this.commentsService.getUserLikeStatus(id, userId)
 
-        if (getComments && data && data.userId) {
-            const userStatusInfo = await this.likeService.getCommentStatus(data!.userId, getComments.id)
-
-
-            res.status(200).json({
-                ...getComments, likeInfo: {
-                    ...getComments.likesInfo,
-                    myStatus: userStatusInfo ? userStatusInfo.status : LikeInfoEnum.None
-                }
-            })
+            if(isUserLiked) {
+                getComments.likesInfo.myStatus = isUserLiked.status
+            }
         }
-        return res.sendStatus(404)
+        return res.status(200).send(getComments)
+
 
     }
 }

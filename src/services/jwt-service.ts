@@ -25,10 +25,20 @@ export class JwtService {
     async verifyUserById(token: string): Promise<TokenPayload | null> {
         try {
             const result: any = jwt.verify(token, jwtSecret)
+            console.log(result)
             return {
                 userId: result.user,
                 deviceId: result.deviceId
             }
+        } catch {
+            return null
+        }
+    }
+
+    async getUserIdFromAccessToken(token: string): Promise<string | null> {
+        try {
+            const result: any = jwt.verify(token, jwtSecret)
+            return result.userId
         } catch {
             return null
         }
@@ -40,14 +50,14 @@ export class JwtService {
     }
 
 
-    async bearerUserIdFromHeaders(authorization: string | undefined): Promise<{ userId: string, userLogin: string } | null> {
+    async bearerUserIdFromHeaders(authorization: string | undefined): Promise< string | null> {
         if (!authorization) return null
         const token = authorization.split(' ')[1]
         const data = await this.verifyUserById(token)
         if (data && data.userId) {
             const user = await this.userService.getUserId(data.userId)
             if (!user) return null
-            return {userId: user.id, userLogin: user.login}
+            return user.id
         }
         return null
     }
