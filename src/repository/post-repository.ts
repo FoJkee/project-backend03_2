@@ -1,6 +1,6 @@
 import {PostModel} from "../models/post-model";
 import {PostType, PostTypeView} from "../types/post-type";
-import {CommentType, CommentViewType} from "../types/comment-type";
+import {CommentType, CommentViewType, LikeInfoEnum} from "../types/comment-type";
 import {CommentsModel} from "../models/comments-model";
 import {LikeRepository} from "./like-repository";
 
@@ -53,15 +53,8 @@ export class PostRepository {
     }
 
     async getPostsId(id: string, userId: string | null): Promise<PostTypeView | null> {
-        // let myStatus = LikeInfoEnum.None
-        // if(userId){
-        //     const postStatus = await this.likeRepository.getPostStatus(userId, id)
-        //     if(postStatus)  myStatus = postStatus.status
-        // }
 
-        return  PostModel.findOne({id}, {_id: 0, __v: 0}).lean()
-
-
+        return PostModel.findOne({postId: id}, {_id: 0, __v: 0})
 
 
     }

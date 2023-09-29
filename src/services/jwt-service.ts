@@ -50,16 +50,5 @@ export class JwtService {
     }
 
 
-    async bearerUserIdFromHeaders(authorization: string | undefined): Promise< string | null> {
-        if (!authorization) return null
-        const token = authorization.split(' ')[1]
-        const data = await this.verifyUserById(token)
-        if (data && data.userId) {
-            const user = await this.userService.getUserId(data.userId)
-            if (!user) return null
-            return user.id
-        }
-        return null
-    }
 
 }

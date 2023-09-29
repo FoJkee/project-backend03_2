@@ -75,6 +75,7 @@ export class CommentsController {
         if (!getComments) return res.sendStatus(404)
 
         const userId = await bearerUserIdFromHeaders(req.headers.authorization)
+
         if (userId) {
 
             const isUserLiked = await this.commentsService.getUserLikeStatus(id, userId)

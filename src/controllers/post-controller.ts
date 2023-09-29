@@ -21,13 +21,13 @@ export class PostController {
 
         const userId = await bearerUserIdFromHeaders(req.headers.authorization)
 
-
         const {pageNumber, pageSize, sortBy, sortDirection} = pagination(req)
 
         const {postId} = req.params
 
         const post = await this.postService.getPostsId(postId, userId)
 
+        if (!post) res.sendStatus(404)
 
         const getComment = await this.postService.getCommentByPost(
             postId, pageNumber, pageSize, sortBy, sortDirection)
@@ -58,7 +58,7 @@ export class PostController {
             return
         }
         const newComment = await this.postService.createCommentByPost(userId, postId, content)
-        if(newComment){
+        if (newComment) {
             res.status(201).json(newComment)
         } else {
             res.sendStatus(400)
