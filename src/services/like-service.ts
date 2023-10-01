@@ -1,6 +1,7 @@
-import {CommentLikeType} from "../types/like-type";
+import {CommentLikeType, PostLikeType} from "../types/like-type";
 import {LikeInfoEnum} from "../types/comment-type";
 import {LikeRepository} from "../repository/like-repository";
+import {PostLikeModel} from "../models/like-model";
 
 export class LikeService {
 
@@ -26,6 +27,10 @@ export class LikeService {
 
     async deleteLikeServiceAll(){
         return this.likeRepository.deleteLikeServiceAll()
+    }
+
+    async getPostStatus(userId: string, postId: string): Promise<PostLikeType | null>{
+        return this.likeRepository.getPostStatus(userId, postId)
     }
 
 

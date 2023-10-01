@@ -50,7 +50,7 @@ export class CommentType {
 export enum LikeInfoEnum {
     None = "None",
     Like = "Like",
-    DisLike = 'Dislike'
+    DisLike = "Dislike"
 }
 
 export type LikeInfoType = {

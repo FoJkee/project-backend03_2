@@ -6,18 +6,22 @@ import {BlogService} from "../services/blog-service";
 import {jwtService} from "../container";
 import {JwtService} from "../services/jwt-service";
 import {bearerUserIdFromHeaders} from "./bearerUserIdFromHeaders";
+import {before} from "node:test";
+import {LikeService} from "../services/like-service";
+import {CommentsService} from "../services/comments-service";
 
 
 export class PostController {
 
     constructor(private postService: PostService,
                 private blogService: BlogService,
-                protected jwtService: JwtService
+                protected jwtService: JwtService,
+                protected likeService: LikeService,
+                protected commentsService: CommentsService
     ) {
     }
 
     async getCommentByPost(req: Request, res: Response) {
-
 
         const userId = await bearerUserIdFromHeaders(req.headers.authorization)
 
@@ -25,12 +29,12 @@ export class PostController {
 
         const {postId} = req.params
 
-        const post = await this.postService.getPostsId(postId, userId)
-
+        const post = await this.postService.getPostsId(postId)
         if (!post) res.sendStatus(404)
 
         const getComment = await this.postService.getCommentByPost(
-            postId, pageNumber, pageSize, sortBy, sortDirection)
+            postId, pageNumber, pageSize, sortBy, sortDirection, userId)
+
 
         const countComments: number = await this.postService.getCommentByPostCount(postId)
 
@@ -41,6 +45,7 @@ export class PostController {
             totalCount: countComments,
             items: getComment
         }
+
         res.status(200).json(result)
 
     }
@@ -52,11 +57,12 @@ export class PostController {
         const {content} = req.body
 
 
-        const findPostId = await this.postService.getPostsId(postId, userId)
+        const findPostId = await this.postService.getPostsId(postId)
         if (!findPostId) {
             res.sendStatus(404)
             return
         }
+
         const newComment = await this.postService.createCommentByPost(userId, postId, content)
         if (newComment) {
             res.status(201).json(newComment)
@@ -114,14 +120,14 @@ export class PostController {
 
     async getPostsId(req: Request, res: Response) {
         const {id} = req.params
-        const userId = req.userId
 
-        const postId = await this.postService.getPostsId(id, userId?.id!)
+        const postId = await this.postService.getPostsId(id)
         if (postId) {
             res.status(200).json(postId)
         } else {
             res.sendStatus(404)
         }
+
 
     }
 

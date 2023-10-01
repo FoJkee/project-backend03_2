@@ -17,7 +17,7 @@ export class CommentsService {
         return this.commentsRepository.updateCommentsId(commentId, content)
     }
 
-    async updateLikeStatus(commentId: string, status: LikeInfoEnum, userId: string): Promise<boolean> {
+    async updateLikeStatusComment(commentId: string, status: LikeInfoEnum, userId: string): Promise<boolean> {
 
         const comment = await this.getCommentsId(commentId)
         if (!comment) return false
@@ -36,7 +36,7 @@ export class CommentsService {
         comment.likesInfo.dislikesCount = dislikesCount
 
 
-        await CommentsModel.updateOne({id: comment.id}, {$set: {...comment}})
+        await CommentsModel.updateOne({id: comment.id}, {$set: {...comment, likesInfo: status}})
         return true
 
     }

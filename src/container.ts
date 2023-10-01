@@ -32,14 +32,13 @@ const userRepository = new UserRepository()
 export const blogRepository = new BlogRepository()
 export const blogService = new BlogService(blogRepository)
 
-const postRepository = new PostRepository(likeRepository)
-const postService = new PostService(postRepository, userRepository, blogRepository)
-
-
-
 
 const commentsRepository = new CommentsRepository(likeRepository)
 const commentsService = new CommentsService(commentsRepository, likeService)
+
+const postRepository = new PostRepository(likeRepository, commentsRepository)
+const postService = new PostService(postRepository, userRepository, blogRepository)
+
 
 export const userService = new UserService(userRepository)
 
@@ -55,7 +54,7 @@ const emailService = new EmailService()
 
 // controllers
 export const blogController = new BlogController(blogService, postService)
-export const postController = new PostController(postService, blogService, jwtService)
+export const postController = new PostController(postService, blogService, jwtService,likeService,commentsService)
 export const userController = new UserController(userService)
 export const testController = new TestingController(blogService, postService,
     userService, securityDeviceService, likeService)

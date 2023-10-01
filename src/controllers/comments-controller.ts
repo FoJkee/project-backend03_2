@@ -39,10 +39,9 @@ export class CommentsController {
         const {likeStatus} = req.body
         const userId = req.userId!.id
 
-
-
-        const comment = await this.commentsService.updateLikeStatus(commentId, likeStatus, userId)
+        const comment = await this.commentsService.updateLikeStatusComment(commentId, likeStatus, userId)
         if (!comment) return res.sendStatus(404)
+
         return res.sendStatus(204)
 
     }

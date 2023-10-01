@@ -3,21 +3,39 @@ import {PostType, PostTypeView} from "../types/post-type";
 import {CommentType, CommentViewType, LikeInfoEnum} from "../types/comment-type";
 import {CommentsModel} from "../models/comments-model";
 import {LikeRepository} from "./like-repository";
+import {CommentsRepository} from "./comments-repository";
 
 
 export class PostRepository {
-    constructor(protected likeRepository: LikeRepository) {
+    constructor(protected likeRepository: LikeRepository,
+                protected commentsRepository: CommentsRepository,
+    ) {
     }
 
-
     async getCommentByPost(postId: string, pageNumber: number,
-                           pageSize: number, sortBy: string, sortDirection: string): Promise<CommentType[]> {
+                           pageSize: number, sortBy: string, sortDirection: string, userId: string | null): Promise<CommentType[] | null> {
 
         const filter = {postId}
-        return CommentsModel.find(filter, {_id: 0, __v: 0, postId: 0})
+
+
+        const result = await CommentsModel.find(filter, {_id: 0, __v: 0, postId: 0})
             .sort({[sortBy]: sortDirection === 'asc' ? 'asc' : "desc"})
             .skip(pageSize * (pageNumber - 1))
             .limit(pageSize)
+
+
+       await result.map( async (comment) => {
+            if(userId) {
+                const userLiked = await this.commentsRepository.getUserLikeStatus(comment.id, userId);
+
+                if(userLiked) {
+                    comment.likesInfo.myStatus = userLiked.status
+                }
+            }
+        })
+
+        return result
+
     }
 
     async getCommentByPostCount(postId: string): Promise<number> {
@@ -52,9 +70,8 @@ export class PostRepository {
         return PostModel.create(post)
     }
 
-    async getPostsId(id: string, userId: string | null): Promise<PostTypeView | null> {
-
-        return PostModel.findOne({postId: id}, {_id: 0, __v: 0})
+    async getPostsId(postId: string): Promise<PostTypeView | null> {
+        return PostModel.findOne({id: postId}, {_id: 0, __v: 0})
 
 
     }

@@ -20,18 +20,9 @@ export class LikeRepository {
         return CommentLikesModel.deleteMany({})
     }
 
-    async updateCommentLikeStatus(userId: string, commentId: string,
-                                  status: LikeInfoEnum): Promise<CommentLikeType | null>{
-
-        return CommentLikesModel.findOneAndUpdate({userId, commentId}, {status})
-    }
-
     async getPostStatus(userId: string, postId: string): Promise<PostLikeType | null>{
-        return PostLikeModel.findOne({userId, postId}).lean()
+        return PostLikeModel.findOne({userId, postId})
     }
-
-    async getNewestLike(postId: string, num: number){}
-
 
 
 }

@@ -13,8 +13,8 @@ export class PostService {
     }
 
     async getCommentByPost(postId: string, pageNumber: number, pageSize: number,
-                           sortBy: string, sortDirection: string): Promise<CommentType[]> {
-        return this.postRepository.getCommentByPost(postId, pageNumber, pageSize, sortBy, sortDirection)
+                           sortBy: string, sortDirection: string, userId: string | null): Promise<CommentType[] | null> {
+        return this.postRepository.getCommentByPost(postId, pageNumber, pageSize, sortBy, sortDirection, userId)
     }
 
     async getCommentByPostCount(postId: string): Promise<number> {
@@ -24,7 +24,7 @@ export class PostService {
     async createCommentByPost(userId: string, postId: string, content: string): Promise<CommentViewType | null> {
 
         const user = await this.userRepository.getUserId(userId)
-        if(!user) return null
+        if (!user) return null
 
         const createComment = new CommentType(
             randomUUID(),
@@ -44,6 +44,7 @@ export class PostService {
 
         return this.postRepository.createCommentByPost(createComment)
     }
+
 
     async getPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<PostTypeView[]> {
         return this.postRepository.getPosts(pageNumber, pageSize, sortBy, sortDirection)
@@ -69,11 +70,10 @@ export class PostService {
 
         return this.postRepository.createPost(newPost)
 
-
     }
 
-    async getPostsId(id: string, userId: string | null): Promise<PostTypeView | null> {
-        return this.postRepository.getPostsId(id, userId)
+    async getPostsId(postId: string): Promise<PostTypeView | null> {
+        return this.postRepository.getPostsId(postId)
     }
 
     async updatedPostId(id: string, title: string, shortDescription: string,
