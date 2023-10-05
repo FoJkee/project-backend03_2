@@ -72,6 +72,18 @@ export class PostController {
 
     }
 
+    async updatePostLikeStatus(req: Request, res: Response){
+        const {postId} = req.params
+        const {likeStatus} = req.body
+        const userId = req.userId!.id
+
+        const post = await this.postService.updateLikeStatusPost(postId, likeStatus, userId)
+        if(!post) return res.sendStatus(404)
+
+        return res.sendStatus(204)
+
+    }
+
 
     async getPosts(req: Request, res: Response) {
 

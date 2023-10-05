@@ -103,7 +103,6 @@ export class UserRepository {
         return UserModel.findOne({id}, {_id: 0, __v: 0, passwordHash: 0, emailConfirmation: 0})
     }
 
-
     async deleteUserId(id: string): Promise<boolean> {
         const result = await UserModel.deleteOne({id})
         return result.deletedCount === 1

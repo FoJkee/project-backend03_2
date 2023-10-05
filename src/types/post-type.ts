@@ -1,14 +1,6 @@
 import {randomUUID} from "crypto";
 
 
-// export interface PostInterface {
-//     title: string,
-//     shortDescription: string,
-//     content: string,
-//     blogId: string
-//     blogName: string
-// }
-
 
 export class PostType {
 
@@ -19,9 +11,29 @@ export class PostType {
         public content: string,
         public blogId: string,
         public blogName: string,
-        public createdAt: string = new Date().toISOString()) {
+        public createdAt: string = new Date().toISOString(),
+        public extendedLikesInfo: extendedLikesInfoType
+    ) {
     }
+}
 
+export enum LikeInfoEnum {
+    None = "None",
+    Like = "Like",
+    DisLike = "Dislike"
+}
+
+export type newestLikesType = Array<{
+    addedAt: string,
+    userId: string,
+    login: string
+}>
+
+export type extendedLikesInfoType = {
+    likesCount: number,
+    dislikesCount: number,
+    myStatus: LikeInfoEnum
+    newestLikes: newestLikesType
 }
 
 

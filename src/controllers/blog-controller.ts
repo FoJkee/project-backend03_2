@@ -68,6 +68,7 @@ export class BlogController {
     async createPostForBlog(req: Request, res: Response) {
 
         const {blogId} = req.params
+        const userId = req.userId!.id
 
         const {title, shortDescription, content} = req.body
 

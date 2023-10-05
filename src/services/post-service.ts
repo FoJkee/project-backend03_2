@@ -1,7 +1,7 @@
 import {PostRepository} from "../repository/post-repository";
-import {PostType, PostTypeView} from "../types/post-type";
+import {LikeInfoEnum, PostType, PostTypeView} from "../types/post-type";
 import {randomUUID} from "crypto";
-import {CommentType, CommentViewType, LikeInfoEnum} from "../types/comment-type";
+import {CommentType, CommentViewType} from "../types/comment-type";
 import {UserRepository} from "../repository/user-repository";
 import {BlogRepository} from "../repository/blog-repository";
 
@@ -45,6 +45,16 @@ export class PostService {
         return this.postRepository.createCommentByPost(createComment)
     }
 
+    async updateLikeStatusPost(postId: string, status: LikeInfoEnum, userId: string){
+        const post = await this.getPostsId(postId)
+        if(!post) return null
+
+
+
+        return
+
+    }
+
 
     async getPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<PostTypeView[]> {
         return this.postRepository.getPosts(pageNumber, pageSize, sortBy, sortDirection)
@@ -55,17 +65,24 @@ export class PostService {
     }
 
     async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostTypeView | null> {
-        const id = randomUUID()
+
         const blog = await this.blogRepository.getBlogId(blogId)
         const blogName = blog!.name
 
         const newPost = new PostType(
-            id,
+            randomUUID(),
             title,
             shortDescription,
             content,
             blogId,
-            blogName
+            blogName,
+            new Date().toISOString(),
+            {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: LikeInfoEnum.None,
+                newestLikes:[]
+            }
         )
 
         return this.postRepository.createPost(newPost)
