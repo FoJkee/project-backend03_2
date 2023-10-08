@@ -1,9 +1,11 @@
 import {PostRepository} from "../repository/post-repository";
-import {LikeInfoEnum, PostType, PostTypeView} from "../types/post-type";
+import {LikeInfoEnum, newestLikesType, PostType, PostTypeView} from "../types/post-type";
 import {randomUUID} from "crypto";
 import {CommentType, CommentViewType} from "../types/comment-type";
 import {UserRepository} from "../repository/user-repository";
 import {BlogRepository} from "../repository/blog-repository";
+import {PostLikeModel} from "../models/like-model";
+import {PostModel} from "../models/post-model";
 
 
 export class PostService {
@@ -45,18 +47,28 @@ export class PostService {
         return this.postRepository.createCommentByPost(createComment)
     }
 
-    async updateLikeStatusPost(postId: string, status: LikeInfoEnum, userId: string){
+    async updateLikeStatusPost(postId: string, status: LikeInfoEnum, userId: string) {
         const post = await this.getPostsId(postId)
-        if(!post) return null
+        if (!post) return null
 
+        await PostLikeModel.updateOne({postId, userId}, {
+            $set: {status, createdAt: new Date().toISOString()}
+        }, {upsert: true})
+        const [likesCount, dislikesCount] = await Promise.all([
+            PostLikeModel.countDocuments({postId, status: LikeInfoEnum.Like}),
+            PostLikeModel.countDocuments({postId, status: LikeInfoEnum.DisLike})
+        ])
 
+        post.extendedLikesInfo.likesCount = likesCount
+        post.extendedLikesInfo.dislikesCount = dislikesCount
 
-        return
+        await PostModel.updateOne({id: post.id}, {$set: {...post, extendedLikesInfo: status}})
+        return true
 
     }
 
 
-    async getPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<PostTypeView[]> {
+    async getPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<PostType[]> {
         return this.postRepository.getPosts(pageNumber, pageSize, sortBy, sortDirection)
     }
 
@@ -64,10 +76,13 @@ export class PostService {
         return this.postRepository.getCountPosts()
     }
 
-    async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostTypeView | null> {
+    async createPost(title: string, shortDescription: string, content: string, blogId: string, newestLikesType: string, userId: string): Promise<PostType | null> {
 
         const blog = await this.blogRepository.getBlogId(blogId)
         const blogName = blog!.name
+
+        const user = await this.userRepository.getUserId(userId)
+        if(!user) return null
 
         const newPost = new PostType(
             randomUUID(),
@@ -81,7 +96,12 @@ export class PostService {
                 likesCount: 0,
                 dislikesCount: 0,
                 myStatus: LikeInfoEnum.None,
-                newestLikes:[]
+                newestLikes: []
+
+                // new Date().toISOString(),
+                // user!.id,
+                // user!.login
+
             }
         )
 
@@ -89,7 +109,7 @@ export class PostService {
 
     }
 
-    async getPostsId(postId: string): Promise<PostTypeView | null> {
+    async getPostsId(postId: string): Promise<PostType | null> {
         return this.postRepository.getPostsId(postId)
     }
 

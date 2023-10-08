@@ -1,6 +1,6 @@
 import {Router} from "express";
 import {
-    CommentContentValidator,
+    CommentContentValidator, LikeStatusValidator,
     PostBlogIdValidator,
     PostContentValidator,
     PostShortDescriptionValidator,
@@ -22,9 +22,16 @@ postRouter.post('/:postId/comments',
     postController.createCommentByPost.bind(postController))
 
 postRouter.get('/', postController.getPosts.bind(postController))
+
 postRouter.post('/',authBasicMiddleware, PostTitleValidator, PostShortDescriptionValidator, PostContentValidator, PostBlogIdValidator,
     customValidator.customBlogIdValidator.bind(customValidator), errorsMiddleware,
     postController.createPost.bind(postController))
+
 postRouter.get('/:id', postController.getPostsId.bind(postController))
+
 postRouter.put('/:id', authBasicMiddleware, postController.updatedPostId.bind(postController))
+
 postRouter.delete('/:id', authBasicMiddleware, postController.deletePostId.bind(postController))
+
+postRouter.put('/:postId/like-status', authBearerMiddleware, LikeStatusValidator, errorsMiddleware,
+    postController.updatePostLikeStatus.bind(postController))

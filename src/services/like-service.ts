@@ -8,19 +8,6 @@ export class LikeService {
     constructor(protected likeRepository: LikeRepository) {
     }
 
-    async createCommentStatus(userId: string, commentId: string): Promise<CommentLikeType | null> {
-
-        const status = new CommentLikeType(
-            userId,
-            commentId,
-            LikeInfoEnum.None,
-            new Date().toISOString()
-        )
-
-        return this.likeRepository.createCommentStatus(status)
-
-    }
-
     async getCommentStatus(userId: string, commentId: string){
         return this.likeRepository.getCommentStatus(userId, commentId)
     }

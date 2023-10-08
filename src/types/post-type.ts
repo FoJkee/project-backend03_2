@@ -23,17 +23,17 @@ export enum LikeInfoEnum {
     DisLike = "Dislike"
 }
 
-export type newestLikesType = Array<{
+export type newestLikesType = {
     addedAt: string,
     userId: string,
     login: string
-}>
+}
 
 export type extendedLikesInfoType = {
     likesCount: number,
     dislikesCount: number,
     myStatus: LikeInfoEnum
-    newestLikes: newestLikesType
+    newestLikes: newestLikesType[]
 }
 
 

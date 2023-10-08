@@ -53,7 +53,7 @@ export class PostRepository {
         return CommentsModel.findOne({id}, {_id: 0, __v: 0, postId: 0})
     }
 
-    async getPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<PostTypeView[]> {
+    async getPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<PostType[]> {
         const filter: any = {}
         return PostModel.find(filter, {_id: 0, __v: 0})
             .sort({[sortBy]: sortDirection === 'asc' ? 'asc' : 'desc'})
@@ -66,13 +66,12 @@ export class PostRepository {
         return PostModel.countDocuments(filter)
     }
 
-    async createPost(post: PostType): Promise<PostTypeView | null> {
+    async createPost(post: PostType): Promise<PostType | null> {
         return PostModel.create(post)
     }
 
-    async getPostsId(postId: string): Promise<PostTypeView | null> {
+    async getPostsId(postId: string): Promise<PostType | null> {
         return PostModel.findOne({id: postId}, {_id: 0, __v: 0})
-
 
     }
 

@@ -14,6 +14,7 @@ export class CommentLikeType {
 export class PostLikeType {
     constructor(
         public userId: string,
+        public postId: string,
         public login: string,
         public status: LikeInfoEnum,
         public createdAt: string

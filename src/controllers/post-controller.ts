@@ -113,6 +113,8 @@ export class PostController {
         const shortDescription = req.body.shortDescription
         const content = req.body.content
 
+        const userId = req.userId!.id
+
         const blog = await this.blogService.getBlogId(blogId)
 
         if (!blog) {
@@ -120,7 +122,7 @@ export class PostController {
             return
         }
 
-        const newPost = await this.postService.createPost(title, shortDescription, content, blog.id)
+        const newPost = await this.postService.createPost(title, shortDescription, content, blog.id, userId)
 
         if (newPost) {
             res.status(201).json(newPost)
