@@ -70,7 +70,6 @@ export class CommentsController {
 
         const {id} = req.params
         const getComments = await this.commentsService.getCommentsId(id)
-
         if (!getComments) return res.sendStatus(404)
 
         const userId = await bearerUserIdFromHeaders(req.headers.authorization)
@@ -83,7 +82,7 @@ export class CommentsController {
                 getComments.likesInfo.myStatus = isUserLiked.status
             }
         }
-        return res.status(200).send(getComments)
+        return res.status(200).json(getComments)
 
 
     }

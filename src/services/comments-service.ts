@@ -28,6 +28,7 @@ export class CommentsService {
             {upsert: true}
         )
         const [likesCount, dislikesCount] = await Promise.all([
+
             CommentLikesModel.countDocuments({commentId, status: LikeInfoEnum.Like}),
             CommentLikesModel.countDocuments({commentId, status: LikeInfoEnum.DisLike})
         ])

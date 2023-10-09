@@ -4,6 +4,8 @@ import {CommentType, CommentViewType, LikeInfoEnum} from "../types/comment-type"
 import {CommentsModel} from "../models/comments-model";
 import {LikeRepository} from "./like-repository";
 import {CommentsRepository} from "./comments-repository";
+import {PostLikeModel} from "../models/like-model";
+import {PostLikeType} from "../types/like-type";
 
 
 export class PostRepository {
@@ -24,11 +26,11 @@ export class PostRepository {
             .limit(pageSize)
 
 
-       await result.map( async (comment) => {
-            if(userId) {
+        await result.map(async (comment) => {
+            if (userId) {
                 const userLiked = await this.commentsRepository.getUserLikeStatus(comment.id, userId);
 
-                if(userLiked) {
+                if (userLiked) {
                     comment.likesInfo.myStatus = userLiked.status
                 }
             }
@@ -53,12 +55,27 @@ export class PostRepository {
         return CommentsModel.findOne({id}, {_id: 0, __v: 0, postId: 0})
     }
 
-    async getPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<PostType[]> {
+    async getPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string, userId: string | null): Promise<PostType[]> {
         const filter: any = {}
-        return PostModel.find(filter, {_id: 0, __v: 0})
+
+
+        const result = await PostModel.find(filter, {_id: 0, __v: 0})
             .sort({[sortBy]: sortDirection === 'asc' ? 'asc' : 'desc'})
             .skip(pageSize * (pageNumber - 1))
             .limit(pageSize)
+
+        await result.map(async (post) => {
+            if (userId) {
+                const userLiked = await this.getUserLikeStatusPost(post.id , userId)
+                if (userLiked) {
+                    post.extendedLikesInfo.myStatus = userLiked.status
+                }
+            }
+        })
+
+        return result
+
+
     }
 
     async getCountPosts(): Promise<number> {
@@ -66,13 +83,12 @@ export class PostRepository {
         return PostModel.countDocuments(filter)
     }
 
-    async createPost(post: PostType): Promise<PostType | null> {
+    async createPost(post: PostType): Promise<PostType> {
         return PostModel.create(post)
     }
 
     async getPostsId(postId: string): Promise<PostType | null> {
         return PostModel.findOne({id: postId}, {_id: 0, __v: 0})
-
     }
 
     async updatedPostId(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
@@ -99,6 +115,10 @@ export class PostRepository {
     async deletePostAll(): Promise<boolean> {
         const result = await PostModel.deleteMany({})
         return result.deletedCount === 1
+    }
+
+    async getUserLikeStatusPost(postId: string, userId: string): Promise<PostLikeType | null> {
+        return PostLikeModel.findOne({postId, userId})
     }
 
 }

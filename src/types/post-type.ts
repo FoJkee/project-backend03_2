@@ -14,6 +14,7 @@ export class PostType {
         public createdAt: string = new Date().toISOString(),
         public extendedLikesInfo: extendedLikesInfoType
     ) {
+
     }
 }
 

@@ -25,6 +25,7 @@ export class PostController {
 
         const userId = await bearerUserIdFromHeaders(req.headers.authorization)
 
+
         const {pageNumber, pageSize, sortBy, sortDirection} = pagination(req)
 
         const {postId} = req.params
@@ -72,13 +73,14 @@ export class PostController {
 
     }
 
-    async updatePostLikeStatus(req: Request, res: Response){
+    async updatePostLikeStatus(req: Request, res: Response) {
         const {postId} = req.params
         const {likeStatus} = req.body
         const userId = req.userId!.id
 
+
         const post = await this.postService.updateLikeStatusPost(postId, likeStatus, userId)
-        if(!post) return res.sendStatus(404)
+        if (!post) return res.sendStatus(404)
 
         return res.sendStatus(204)
 
@@ -87,10 +89,12 @@ export class PostController {
 
     async getPosts(req: Request, res: Response) {
 
+        const userId = await bearerUserIdFromHeaders(req.headers.authorization)
+
         const {pageNumber, pageSize, sortDirection, sortBy} = pagination(req)
 
         const getPost = await this.postService.getPosts(
-            pageNumber, pageSize, sortDirection, sortBy
+            pageNumber, pageSize, sortBy, sortDirection, userId
         )
         const postCount = await this.postService.getCountPosts()
 
@@ -113,7 +117,6 @@ export class PostController {
         const shortDescription = req.body.shortDescription
         const content = req.body.content
 
-        const userId = req.userId!.id
 
         const blog = await this.blogService.getBlogId(blogId)
 
@@ -122,7 +125,7 @@ export class PostController {
             return
         }
 
-        const newPost = await this.postService.createPost(title, shortDescription, content, blog.id, userId)
+        const newPost = await this.postService.createPost(title, shortDescription, content, blog.id)
 
         if (newPost) {
             res.status(201).json(newPost)
@@ -136,13 +139,18 @@ export class PostController {
         const {id} = req.params
 
         const postId = await this.postService.getPostsId(id)
-        if (postId) {
-            res.status(200).json(postId)
-        } else {
-            res.sendStatus(404)
+        if (!postId) return res.sendStatus(404)
+
+        const userId = await bearerUserIdFromHeaders(req.headers.authorization)
+        if (userId) {
+            const isUserLikePost = await this.postService.getUserLikeStatusPost(id, userId)
+
+            if (isUserLikePost) {
+                postId.extendedLikesInfo.myStatus = isUserLikePost.status
+            }
+
         }
-
-
+        return res.status(200).json(postId)
     }
 
     async updatedPostId(req: Request, res: Response) {

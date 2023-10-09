@@ -6,6 +6,7 @@ import {UserRepository} from "../repository/user-repository";
 import {BlogRepository} from "../repository/blog-repository";
 import {PostLikeModel} from "../models/like-model";
 import {PostModel} from "../models/post-model";
+import {PostLikeType} from "../types/like-type";
 
 
 export class PostService {
@@ -54,9 +55,12 @@ export class PostService {
         await PostLikeModel.updateOne({postId, userId}, {
             $set: {status, createdAt: new Date().toISOString()}
         }, {upsert: true})
+
         const [likesCount, dislikesCount] = await Promise.all([
+
             PostLikeModel.countDocuments({postId, status: LikeInfoEnum.Like}),
             PostLikeModel.countDocuments({postId, status: LikeInfoEnum.DisLike})
+
         ])
 
         post.extendedLikesInfo.likesCount = likesCount
@@ -68,21 +72,19 @@ export class PostService {
     }
 
 
-    async getPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<PostType[]> {
-        return this.postRepository.getPosts(pageNumber, pageSize, sortBy, sortDirection)
+    async getPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string, userId: string | null): Promise<PostType[]> {
+        return this.postRepository.getPosts(pageNumber, pageSize, sortBy, sortDirection, userId)
     }
 
     async getCountPosts(): Promise<number> {
         return this.postRepository.getCountPosts()
     }
 
-    async createPost(title: string, shortDescription: string, content: string, blogId: string, newestLikesType: string, userId: string): Promise<PostType | null> {
+    async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostType> {
 
         const blog = await this.blogRepository.getBlogId(blogId)
         const blogName = blog!.name
 
-        const user = await this.userRepository.getUserId(userId)
-        if(!user) return null
 
         const newPost = new PostType(
             randomUUID(),
@@ -97,11 +99,6 @@ export class PostService {
                 dislikesCount: 0,
                 myStatus: LikeInfoEnum.None,
                 newestLikes: []
-
-                // new Date().toISOString(),
-                // user!.id,
-                // user!.login
-
             }
         )
 
@@ -124,6 +121,10 @@ export class PostService {
 
     async deletePostAll(): Promise<boolean> {
         return this.postRepository.deletePostAll()
+    }
+
+    async getUserLikeStatusPost(postId: string, userId: string): Promise<PostLikeType | null> {
+        return this.postRepository.getUserLikeStatusPost(postId, userId)
     }
 
 
