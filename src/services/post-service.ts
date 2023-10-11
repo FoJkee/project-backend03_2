@@ -48,13 +48,15 @@ export class PostService {
         return this.postRepository.createCommentByPost(createComment)
     }
 
-    async updateLikeStatusPost(postId: string, status: LikeInfoEnum, userId: string) {
-        const post = await this.getPostsId(postId)
+    async updateLikeStatusPost(postId: string, status: LikeInfoEnum, userId: string | null) {
+        const post = await this.getPostsId(postId, userId)
         if (!post) return null
 
-        await PostLikeModel.updateOne({postId, userId}, {
-            $set: {status, createdAt: new Date().toISOString()}
-        }, {upsert: true})
+        await PostLikeModel.updateOne({postId, userId},
+            {
+                $set: {status, createdAt: new Date().toISOString()}
+            },
+            {upsert: true})
 
         const [likesCount, dislikesCount] = await Promise.all([
 
@@ -66,11 +68,11 @@ export class PostService {
         post.extendedLikesInfo.likesCount = likesCount
         post.extendedLikesInfo.dislikesCount = dislikesCount
 
+
         await PostModel.updateOne({id: post.id}, {$set: {...post, extendedLikesInfo: status}})
         return true
 
     }
-
 
     async getPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string, userId: string | null): Promise<PostType[]> {
         return this.postRepository.getPosts(pageNumber, pageSize, sortBy, sortDirection, userId)
@@ -106,8 +108,8 @@ export class PostService {
 
     }
 
-    async getPostsId(postId: string): Promise<PostType | null> {
-        return this.postRepository.getPostsId(postId)
+    async getPostsId(id: string, userId: string | null): Promise<PostType | null> {
+        return this.postRepository.getPostsId(id, userId)
     }
 
     async updatedPostId(id: string, title: string, shortDescription: string,

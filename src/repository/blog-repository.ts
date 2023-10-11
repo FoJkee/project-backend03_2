@@ -28,7 +28,7 @@ export class BlogRepository {
 
     async getPostForBlog(blogId: string, pageNumber: number, pageSize: number, sortBy: string, sortDirection: string) {
         return PostModel
-            .find({blogId})
+            .find({blogId}, {_id: 0, __v: 0})
             .sort({[sortBy]: sortDirection === 'asc' ? 'asc' : 'desc'})
             .skip(pageSize * (pageNumber - 1))
             .limit(pageSize)
@@ -39,7 +39,7 @@ export class BlogRepository {
     }
 
     async getBlogId(id: string): Promise<BlogType | null> {
-        return BlogModels.findOne({id})
+        return BlogModels.findOne({id}, {_id: 0, __v: 0})
     }
 
     async updateBlogId(id: string, name: string, description: string, websiteUrl: string): Promise<boolean> {

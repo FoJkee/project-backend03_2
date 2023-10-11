@@ -30,7 +30,7 @@ export class PostController {
 
         const {postId} = req.params
 
-        const post = await this.postService.getPostsId(postId)
+        const post = await this.postService.getPostsId(postId, userId)
         if (!post) res.sendStatus(404)
 
         const getComment = await this.postService.getCommentByPost(
@@ -58,7 +58,7 @@ export class PostController {
         const {content} = req.body
 
 
-        const findPostId = await this.postService.getPostsId(postId)
+        const findPostId = await this.postService.getPostsId(postId, userId)
         if (!findPostId) {
             res.sendStatus(404)
             return
@@ -137,11 +137,12 @@ export class PostController {
 
     async getPostsId(req: Request, res: Response) {
         const {id} = req.params
+        const userId = await bearerUserIdFromHeaders(req.headers.authorization)
 
-        const postId = await this.postService.getPostsId(id)
+        const postId = await this.postService.getPostsId(id, userId)
+
         if (!postId) return res.sendStatus(404)
 
-        const userId = await bearerUserIdFromHeaders(req.headers.authorization)
         if (userId) {
             const isUserLikePost = await this.postService.getUserLikeStatusPost(id, userId)
 
