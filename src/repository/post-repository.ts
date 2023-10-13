@@ -1,12 +1,11 @@
 import {PostModel} from "../models/post-model";
-import {LikeInfoEnum, PostType} from "../types/post-type";
+import {PostType} from "../types/post-type";
 import {CommentType, CommentViewType} from "../types/comment-type";
 import {CommentsModel} from "../models/comments-model";
 import {LikeRepository} from "./like-repository";
 import {CommentsRepository} from "./comments-repository";
 import {PostLikeModel} from "../models/like-model";
 import {PostLikeType} from "../types/like-type";
-import {log} from "util";
 
 
 export class PostRepository {
@@ -65,7 +64,7 @@ export class PostRepository {
             .limit(pageSize)
 
 
-        await Promise.all( result.map(async (post) => {
+        await Promise.all(result.map(async (post) => {
 
             if (userId) {
                 const userLiked = await this.getUserLikeStatusPost(post.id, userId)
@@ -76,7 +75,7 @@ export class PostRepository {
 
             const newestLikes = await this.likeRepository.newestLike(post.id, 3)
 
-            newestLikes.map(l => ({
+           newestLikes.map(l => ({
                 login: l.login,
                 userId: l.userId,
                 addedAt: l.createdAt
@@ -103,13 +102,13 @@ export class PostRepository {
 
         const newestLikes = await this.likeRepository.newestLike(res.id, 3)
 
-        res.extendedLikesInfo.newestLikes = newestLikes.map(l => ({
+        const newestLikesMap = newestLikes.map(l => ({
             login: l.login,
             userId: l.userId,
             addedAt: l.createdAt
         }))
 
-        return res
+        return {...res, extendedLikesInfo: {...res.extendedLikesInfo, newestLikes: newestLikesMap}}
     }
 
 
