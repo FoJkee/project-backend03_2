@@ -48,13 +48,13 @@ export class PostService {
         return this.postRepository.createCommentByPost(createComment)
     }
 
-    async updateLikeStatusPost(postId: string, status: LikeInfoEnum, userId: string | null) {
+    async updateLikeStatusPost(postId: string, status: LikeInfoEnum, userId: string, login: string) {
         const post = await this.getPostsId(postId, userId)
         if (!post) return null
 
         await PostLikeModel.updateOne({postId, userId},
             {
-                $set: {status, createdAt: new Date().toISOString()}
+                $set: {status, createdAt: new Date().toISOString(), login}
             },
             {upsert: true})
 
@@ -69,7 +69,7 @@ export class PostService {
         post.extendedLikesInfo.dislikesCount = dislikesCount
 
 
-        await PostModel.updateOne({id: post.id}, {$set: {...post, extendedLikesInfo: status}})
+        await PostModel.updateOne({id: post.id}, {$set: {...post}})
         return true
 
     }
@@ -104,7 +104,8 @@ export class PostService {
             }
         )
 
-        return this.postRepository.createPost(newPost)
+        await this.postRepository.createPost({...newPost})
+        return newPost
 
     }
 
@@ -125,8 +126,8 @@ export class PostService {
         return this.postRepository.deletePostAll()
     }
 
-    async getUserLikeStatusPost(postId: string, userId: string): Promise<PostLikeType | null> {
-        return this.postRepository.getUserLikeStatusPost(postId, userId)
+    async getUserLikeStatusPost(id: string, userId: string): Promise<PostLikeType | null> {
+        return this.postRepository.getUserLikeStatusPost(id, userId)
     }
 
 

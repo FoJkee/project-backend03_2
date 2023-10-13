@@ -1,5 +1,5 @@
 import {CommentsModel} from "../models/comments-model";
-import {CommentType, LikeInfoEnum} from "../types/comment-type";
+import {CommentType} from "../types/comment-type";
 import {CommentLikeType} from "../types/like-type";
 import {LikeRepository} from "./like-repository";
 import {CommentLikesModel} from "../models/like-model";

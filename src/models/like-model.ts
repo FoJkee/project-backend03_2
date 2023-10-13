@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import {CommentLikeType, PostLikeType} from "../types/like-type";
+import {LikeInfoEnum} from "../types/post-type";
 
 
 const CommentLikeSchema = new mongoose.Schema<CommentLikeType>({
@@ -18,9 +19,8 @@ const PostLikeSchema = new mongoose.Schema<PostLikeType>({
     login: {type: String, required: true},
     status: {type: String, required: true},
     createdAt: {type: String, required: true}
-
 })
 
-export const PostLikeModel = mongoose.model<PostLikeType>('post-like', PostLikeSchema)
+export const PostLikeModel = mongoose.model('post-like', PostLikeSchema)
 
 

@@ -6,9 +6,5 @@ export const bearerUserIdFromHeaders = async (authorization: string | undefined)
 
     const token = authorization.split(' ')[1]
 
-    const userId = await jwtService.getUserIdFromAccessToken(token)
-
-    if (!userId) return null
-
-    return userId
+    return  jwtService.getUserIdFromAccessToken(token)
 }

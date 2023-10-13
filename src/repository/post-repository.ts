@@ -6,6 +6,7 @@ import {LikeRepository} from "./like-repository";
 import {CommentsRepository} from "./comments-repository";
 import {PostLikeModel} from "../models/like-model";
 import {PostLikeType} from "../types/like-type";
+import {log} from "util";
 
 
 export class PostRepository {
@@ -63,20 +64,24 @@ export class PostRepository {
             .skip(pageSize * (pageNumber - 1))
             .limit(pageSize)
 
-        await result.map(async (post) => {
+
+        await Promise.all( result.map(async (post) => {
+
             if (userId) {
                 const userLiked = await this.getUserLikeStatusPost(post.id, userId)
                 if (userLiked) {
                     post.extendedLikesInfo.myStatus = userLiked.status
                 }
             }
+
             const newestLikes = await this.likeRepository.newestLike(post.id, 3)
-            return newestLikes.map((l) => ({
-                userId: l.userId,
+
+            newestLikes.map(l => ({
                 login: l.login,
+                userId: l.userId,
                 addedAt: l.createdAt
             }))
-        })
+        }))
 
         return result
     }
@@ -89,25 +94,24 @@ export class PostRepository {
     async createPost(post: PostType): Promise<PostType> {
         return PostModel.create(post)
 
+
     }
 
-    async getPostsId(postId: string, userId: string | null): Promise<PostType | null> {
-        const res = await PostModel.findOne({id: postId}, {_id: 0, __v: 0}).lean()
+    async getPostsId(id: string, userId: string | null): Promise<PostType | null> {
+        const res = await PostModel.findOne({id}, {_id: 0, __v: 0}).lean()
         if (!res) return null
 
         const newestLikes = await this.likeRepository.newestLike(res.id, 3)
-        newestLikes.map(l => ({
+
+        res.extendedLikesInfo.newestLikes = newestLikes.map(l => ({
             login: l.login,
             userId: l.userId,
             addedAt: l.createdAt
         }))
 
-        // await PostModel.updateOne({id: res.id}, {$set: {extendedLikesInfo: newestLikes}},
-        //     {upsert: true})
-
         return res
-
     }
+
 
     async updatedPostId(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
         const result = await PostModel.updateOne({id},
@@ -135,8 +139,8 @@ export class PostRepository {
         return result.deletedCount === 1
     }
 
-    async getUserLikeStatusPost(postId: string, userId: string): Promise<PostLikeType | null> {
-        return PostLikeModel.findOne({postId, userId})
+    async getUserLikeStatusPost(id: string, userId: string): Promise<PostLikeType | null> {
+        return PostLikeModel.findOne({postId: id, userId})
     }
 
 }

@@ -3,7 +3,7 @@ import {PostService} from "../services/post-service";
 
 import {pagination} from "./paginations";
 import {BlogService} from "../services/blog-service";
-import {jwtService} from "../container";
+import {jwtService, postController} from "../container";
 import {JwtService} from "../services/jwt-service";
 import {bearerUserIdFromHeaders} from "./bearerUserIdFromHeaders";
 import {before} from "node:test";
@@ -24,7 +24,7 @@ export class PostController {
     async getCommentByPost(req: Request, res: Response) {
 
         const userId = await bearerUserIdFromHeaders(req.headers.authorization)
-
+        if (!userId) return null
 
         const {pageNumber, pageSize, sortBy, sortDirection} = pagination(req)
 
@@ -47,7 +47,7 @@ export class PostController {
             items: getComment
         }
 
-        res.status(200).json(result)
+       return  res.status(200).json(result)
 
     }
 
@@ -77,9 +77,10 @@ export class PostController {
         const {postId} = req.params
         const {likeStatus} = req.body
         const userId = req.userId!.id
+        const userLogin = req.userId!.login
 
 
-        const post = await this.postService.updateLikeStatusPost(postId, likeStatus, userId)
+        const post = await this.postService.updateLikeStatusPost(postId, likeStatus, userId, userLogin)
         if (!post) return res.sendStatus(404)
 
         return res.sendStatus(204)
@@ -139,19 +140,18 @@ export class PostController {
         const {id} = req.params
         const userId = await bearerUserIdFromHeaders(req.headers.authorization)
 
-        const postId = await this.postService.getPostsId(id, userId)
+        const getPostId = await this.postService.getPostsId(id, userId)
 
-        if (!postId) return res.sendStatus(404)
+        if (!getPostId) return res.sendStatus(404)
 
         if (userId) {
             const isUserLikePost = await this.postService.getUserLikeStatusPost(id, userId)
-
             if (isUserLikePost) {
-                postId.extendedLikesInfo.myStatus = isUserLikePost.status
+                getPostId.extendedLikesInfo.myStatus = isUserLikePost.status
             }
 
         }
-        return res.status(200).json(postId)
+        return res.status(200).json(getPostId)
     }
 
     async updatedPostId(req: Request, res: Response) {
