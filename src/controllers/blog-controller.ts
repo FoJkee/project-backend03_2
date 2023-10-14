@@ -3,6 +3,7 @@ import {BlogService} from "../services/blog-service";
 import {pagination} from "./paginations";
 import {BlogType, Paginated} from "../types/blog-type";
 import {PostService} from "../services/post-service";
+import {bearerUserIdFromHeaders} from "./bearerUserIdFromHeaders";
 
 
 export class BlogController {
@@ -46,11 +47,13 @@ export class BlogController {
     }
 
     async getPostForBlog(req: Request, res: Response) {
+        const userId = await bearerUserIdFromHeaders(req.headers.authorization)
+
         const {blogId} = req.params
         const {pageNumber, pageSize, sortBy, sortDirection} = pagination(req)
 
         const getPostsForBlog = await this.blogService.getPostForBlog(
-            blogId, pageNumber, pageSize, sortBy, sortDirection)
+            blogId, pageNumber, pageSize, sortBy, sortDirection, userId)
 
         const getPostsForBlogCount = await this.blogService.getPostForBlogCount(blogId)
 
@@ -68,7 +71,7 @@ export class BlogController {
     async createPostForBlog(req: Request, res: Response) {
 
         const {blogId} = req.params
-        const userId = req.userId!.id
+        // const userId = req.userId!.id
 
         const {title, shortDescription, content} = req.body
 

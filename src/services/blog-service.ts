@@ -30,8 +30,8 @@ export class BlogService {
         return this.blogRepository.createBlog(newBlog)
     }
 
-    async getPostForBlog(blogId: string, pageNumber: number, pageSize: number, sortBy: string, sortDirection: string) {
-        return this.blogRepository.getPostForBlog(blogId, pageNumber, pageSize, sortBy, sortDirection)
+    async getPostForBlog(blogId: string, pageNumber: number, pageSize: number, sortBy: string, sortDirection: string, userId: string | null) {
+        return this.blogRepository.getPostForBlog(blogId, pageNumber, pageSize, sortBy, sortDirection, userId)
     }
 
     async getPostForBlogCount(blogId: string): Promise<number> {

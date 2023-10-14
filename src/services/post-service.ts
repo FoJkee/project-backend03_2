@@ -107,6 +107,7 @@ export class PostService {
         await this.postRepository.createPost({...newPost})
         return newPost
 
+
     }
 
     async getPostsId(id: string, userId: string | null): Promise<PostType | null> {

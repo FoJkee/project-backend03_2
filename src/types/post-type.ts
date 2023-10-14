@@ -1,4 +1,5 @@
 import {randomUUID} from "crypto";
+import e from "express";
 
 
 
@@ -17,6 +18,12 @@ export class PostType {
 
     }
 }
+
+
+
+
+
+
 
 export enum LikeInfoEnum {
     None = "None",
@@ -46,4 +53,7 @@ export type PostTypeView = {
     blogId: string,
     blogName: string,
     createdAt: string
+    extendedLikesInfo: extendedLikesInfoType
 }
+
+export type PostTypeV = Omit<PostTypeView, "_id">

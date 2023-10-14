@@ -1,8 +1,13 @@
 import {BlogModels} from "../models/blog-model";
 import {BlogType, BlogTypeView} from "../types/blog-type";
 import {PostModel} from "../models/post-model";
+import {PostRepository} from "./post-repository";
+import {LikeRepository} from "./like-repository";
 
 export class BlogRepository {
+    constructor(protected postRepository: PostRepository,
+                protected likeRepository: LikeRepository) {
+    }
 
     async getBlogs(searchNameTerm: string, sortBy: string,
                    sortDirection: string, pageNumber: number, pageSize: number): Promise<BlogTypeView[]> {
@@ -26,12 +31,37 @@ export class BlogRepository {
         return BlogModels.create(blog)
     }
 
-    async getPostForBlog(blogId: string, pageNumber: number, pageSize: number, sortBy: string, sortDirection: string) {
-        return PostModel
+    async getPostForBlog(blogId: string, pageNumber: number, pageSize: number, sortBy: string, sortDirection: string,
+                         userId: string | null) {
+
+        const result = await PostModel
             .find({blogId}, {_id: 0, __v: 0})
             .sort({[sortBy]: sortDirection === 'asc' ? 'asc' : 'desc'})
             .skip(pageSize * (pageNumber - 1))
             .limit(pageSize)
+            .lean()
+
+        const res = result.map(async (post) => {
+
+            if (userId) {
+                const userLike = await this.postRepository.getUserLikeStatusPost(post.id, userId)
+                if (userLike) {
+                    post.extendedLikesInfo.myStatus = userLike.status
+                }
+            }
+
+            const newestLike = await this.likeRepository.newestLike(post.id, 3)
+
+           const newestLikeMap =  newestLike.map(l => ({
+                addedAt: l.createdAt,
+                userId: l.userId,
+                login: l.login,
+            }))
+            return {...post, extendedLikesInfo: {...post.extendedLikesInfo, newestLikes: newestLikeMap}}
+        })
+
+        return await Promise.all(res)
+
     }
 
     async getPostForBlogCount(blogId: string): Promise<number> {

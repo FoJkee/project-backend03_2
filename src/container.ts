@@ -29,14 +29,15 @@ const likeService = new LikeService(likeRepository)
 
 const userRepository = new UserRepository()
 
-export const blogRepository = new BlogRepository()
-export const blogService = new BlogService(blogRepository)
 
 
 const commentsRepository = new CommentsRepository(likeRepository)
 const commentsService = new CommentsService(commentsRepository, likeService)
 
 const postRepository = new PostRepository(likeRepository, commentsRepository)
+export const blogRepository = new BlogRepository(postRepository, likeRepository)
+export const blogService = new BlogService(blogRepository)
+
 const postService = new PostService(postRepository, userRepository, blogRepository)
 
 

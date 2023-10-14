@@ -1,5 +1,5 @@
 import {PostModel} from "../models/post-model";
-import {PostType} from "../types/post-type";
+import {PostType, PostTypeV} from "../types/post-type";
 import {CommentType, CommentViewType} from "../types/comment-type";
 import {CommentsModel} from "../models/comments-model";
 import {LikeRepository} from "./like-repository";
@@ -58,31 +58,36 @@ export class PostRepository {
     async getPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string, userId: string | null): Promise<PostType[]> {
 
 
-        const result = await PostModel.find({}, {_id: 0, __v: 0})
+        const result = await PostModel
+            .find({}, {__v: 0, _id: 0})
             .sort({[sortBy]: sortDirection === 'asc' ? 'asc' : 'desc'})
             .skip(pageSize * (pageNumber - 1))
             .limit(pageSize)
+            .lean()
 
 
-        await Promise.all(result.map(async (post) => {
+        const res = result.map(async post => {
 
             if (userId) {
                 const userLiked = await this.getUserLikeStatusPost(post.id, userId)
                 if (userLiked) {
+
                     post.extendedLikesInfo.myStatus = userLiked.status
                 }
             }
 
             const newestLikes = await this.likeRepository.newestLike(post.id, 3)
 
-           newestLikes.map(l => ({
-                login: l.login,
+            const newestLikesMap = newestLikes.map(l => ({
+                addedAt: l.createdAt,
                 userId: l.userId,
-                addedAt: l.createdAt
+                login: l.login,
             }))
-        }))
+            return {...post, extendedLikesInfo: {...post.extendedLikesInfo, newestLikes: newestLikesMap}}
 
-        return result
+        })
+
+        return await Promise.all(res)
     }
 
     async getCountPosts(): Promise<number> {
@@ -92,8 +97,6 @@ export class PostRepository {
 
     async createPost(post: PostType): Promise<PostType> {
         return PostModel.create(post)
-
-
     }
 
     async getPostsId(id: string, userId: string | null): Promise<PostType | null> {
@@ -103,9 +106,9 @@ export class PostRepository {
         const newestLikes = await this.likeRepository.newestLike(res.id, 3)
 
         const newestLikesMap = newestLikes.map(l => ({
-            login: l.login,
+            addedAt: l.createdAt,
             userId: l.userId,
-            addedAt: l.createdAt
+            login: l.login,
         }))
 
         return {...res, extendedLikesInfo: {...res.extendedLikesInfo, newestLikes: newestLikesMap}}
