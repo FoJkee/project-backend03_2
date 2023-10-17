@@ -34,7 +34,6 @@ export class AuthController {
             )
         }
         return createUser ? res.sendStatus(204) : res.sendStatus(400)
-
     }
 
     async login(req: Request, res: Response) {
